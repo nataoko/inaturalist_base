@@ -4,7 +4,7 @@
 \usepackage{polski}
 \usepackage[utf8]{inputenc}
 
-\title{Baza iNaturalist --- wystêpowanie gatunków zagro¿onych na danym obszarze\\ \large{projekt z Pracowni informatycznej}}
+\title{Baza iNaturalist --- wystêpowanie gatunków zagro¿onych na~danym obszarze\\ \large{projekt z Pracowni informatycznej}}
 \author{Natalia Okopna \\nr albumu: 123454\\\\\\\\ prowadz¹cy: dr hab. Wojciech Jakubowski}
 \date{PaŸdziernik 2021}
 
@@ -12,13 +12,36 @@
 \maketitle
 \newpage
 \section{Specyfikacja}
-\subsection*{Cel aplikacji --- sposób dzia³ania}
- %Specyfikacja – umowa pomiêdzy zleceniodawc¹ a wytwórc¹ oprogramowania. Zleceniodawcy okreœlaj¹ swoje potrzeby, a wytwórca doprecyzowuje je w taki sposób, aby umo¿liwia³y jednoznaczn¹ realizacjê funkcjonalnoœci produktu
- Stworzona zostanie aplikacja, której g³ównym zadaniem bêdzie prezentacja na danym obszarze obserwacji gatunków zagro¿onych z okreœlonej rodziny. Dane obserwacji bêd¹ pobierane w czasie rzeczywistym z bazy internetowej iNaturalist dostêpnej pod adresem internetowym \textit{www.inaturalist.org}. Obszarami dostêpnymi do zaznaczenia bêd¹: kraje - do wyboru z listy dostêpnych. Obserwacje wystêpowañ bêd¹ obejmowa³y rz¹d \textit{pieczarkowce}. 
- %zdj?, po najechanou na pozycje, zaznacza siê na mapie (?)
- %podzia³ na gatunki obserwacji(?)
+\subsection*{Cel aplikacji}
+ %Specyfikacja – umowa pomiêdzy zleceniodawc¹ a wytwórc¹ oprogramowania. Zleceniodawcy okreœlaj¹ swoje potrzeby, a wytwórca doprecyzowuje je w~taki sposób, aby umo¿liwia³y jednoznaczn¹ realizacjê funkcjonalnoœci produktu
+ Stworzona zostanie aplikacja, której g³ównym zadaniem bêdzie prezentacja na~danym obszarze obserwacji gatunków zagro¿onych z okreœlonej rodziny. Dane obserwacji bêd¹ pobierane w~czasie rzeczywistym z bazy internetowej iNaturalist dostêpnej pod adresem internetowym \textit{www.inaturalist.org}. Obszarami dostêpnymi do zaznaczenia bêd¹ obszary geograficzne wyznaczone przez u¿ytkownika. Obserwacje wystêpowañ bêd¹ obejmowa³y rz¹d \textit{pieczarkowce}. 
+ %zdj?, po najechanou na~pozycje, zaznacza siê na~mapie (?)
+ %podzia³ na~gatunki obserwacji(?)
+ \subsection*{Dane wejœciowe}
+ U¿ytkownik podaje w~wyznaczonym miejscu interfejsu graficznego dane wejœciowe w~okreœlony poni¿ej sposób.
+ \begin{itemize}
+     \item WSPÓ£RZÊDNE GEOGRAFICZNE OBSZARU\\\\ U¿ytkownik podaje minimum 3 pary wspó³rzêdnych geograficznych okreœlaj¹cych obszar, na~którym bêd¹ wyœwietlane obserwacje gatunku zagro¿onego. Wprowadzaj¹c dane, u¿ytkownik powinien pamiêtaæ o nastêpuj¹cych zasadach:
+ \begin{enumerate}
+     \item ka¿da para wspó³rzêdnych ma byæ oddzielona przecinkiem i spacj¹
+     \item d³ugoœæ i szerokoœæ ka¿dej wspó³rzêdnej ma byæ oddzielona spacj¹, 
+     \item wspó³rzêdne maj¹ byæ wyra¿one w~stopniach z dok³adnoœci¹ do czêœci stutysiêcznej --- w~przypadku podania wspó³rzêdnej z mniejsz¹ dok³adnoœci¹, aplikacja domyœlnie dopisuje zera,
+     \item czêœci dziesiêtne wspó³rzêdnych maj¹ byæ poprzedzone kropk¹,
+     \item ujemne dane maj¹ byæ poprzedzone minusem,
+     \item zakres d³ugoœci geograficznej to $(-180.0000, 180.0000)$, 
+     \item zakres szerokoœci geograficznej to $(-90.0000, 90.0000)$.
+
+ \end{enumerate} Przyk³adowe dane wejœciowe wspó³rzêdnych u¿ytkownika: 
+ $$-12.34565\textit{ } 1.23456,\textit{ }-12.34500\textit{ } 1.23450,\textit{ } -12.34300\textit{ } 1.23440.$$
+ \item ZAKRES CZASU OBSERWACJI\\\\ U¿ytkownik podaje datê pocz¹tkow¹ oraz datê koñcow¹ okresu, dla którego bêd¹ wyœwietlane obserwacje gatunku zagro¿onego. Daty podaje w~formacie \textit{DD.MM.RRRR}, gdzie DD oznacza dzieñ, MM --- miesi¹c, RRRR --- rok.
+ 
+ \end{itemize}
+  
+ \subsection*{Dane wyjœciowe}
+ Po zatwierdzeniu danych wejœciowych, zostaj¹ pobierane dane z bazy iNaturalist i  s¹ zapisywane do pliku na komputerze u¿ytkownika. Nastêpnie program wyœwietla wyznaczony przez u¿ytkownika obszar wraz z punktami obserwacji gatunku zagro¿onego. Obok mapy pojawia siê informacja o liczbie obserwacji oraz lista z danymi ka¿dej obserwacji takimi jak: data obserwacji, dok³adny gatunek, dane geograficzne, zdjêcie.
+ 
+
  \subsection*{Technologia wykonania aplikacji}
- Kod programu bêdzie napisany w jêzyku Python 3.8 z u¿yciem m. in. biblioteki \textit{pyinaturalist}.
+ Kod programu bêdzie napisany w~jêzyku Python 3.8 z u¿yciem m. in. biblioteki \textit{pyinaturalist} s³u¿¹ca do obs³ugi danych z bazy iNaturalist oraz \textit{geopandas} odpowiadaj¹ca za obrazowanie wspó³rzêdnych geograficznych.
  \subsection*{Warunki techniczne}
- Aplikacja bêdzie mo¿liwa do uruchomienia na innych komputerach z zainstalowanym systemem \textit{Windows}. Do u¿ytkowania aplikacji wymagane jest po³¹czenie internetowe.
+ Aplikacja bêdzie mo¿liwa do uruchomienia na~innych komputerach z zainstalowanym systemem \textit{Windows}. Do u¿ytkowania aplikacji wymagane jest po³¹czenie internetowe.
 \end{document}
