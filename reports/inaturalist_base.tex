@@ -6,7 +6,7 @@
 
 \title{Baza iNaturalist --- wystêpowanie gatunków zagro¿onych na~danym obszarze\\ \large{projekt z Pracowni informatycznej}}
 \author{Natalia Okopna \\nr albumu: 123454\\\\\\\\ prowadz¹cy: dr hab. Wojciech Jakubowski}
-\date{PaŸdziernik 2021}
+\date{Listopad 2021}
 
 \begin{document}
 \maketitle
@@ -20,7 +20,7 @@
  \subsection*{Dane wejœciowe}
  U¿ytkownik podaje w~wyznaczonym miejscu interfejsu graficznego dane wejœciowe w~okreœlony poni¿ej sposób.
  \begin{itemize}
-     \item WSPÓ£RZÊDNE GEOGRAFICZNE OBSZARU\\\\ U¿ytkownik podaje minimum 3 pary wspó³rzêdnych geograficznych okreœlaj¹cych obszar, na~którym bêd¹ wyœwietlane obserwacje gatunku zagro¿onego. Wprowadzaj¹c dane, u¿ytkownik powinien pamiêtaæ o nastêpuj¹cych zasadach:
+     \item WSPÓ£RZÊDNE GEOGRAFICZNE I NAZWA OBSZARU\\\\ U¿ytkownik podaje:nazwê obszaru --- mog¹ byæ to nazwy zawieraj¹ce spacjê i znaki polskie, bez znaków specjalnych oraz minimum 3 pary wspó³rzêdnych geograficznych okreœlaj¹cych obszar, na~którym bêd¹ wyœwietlane obserwacje gatunku zagro¿onego. Wprowadzaj¹c dane, u¿ytkownik powinien pamiêtaæ o nastêpuj¹cych zasadach:
  \begin{enumerate}
      \item ka¿da para wspó³rzêdnych ma byæ oddzielona przecinkiem i spacj¹
      \item d³ugoœæ i szerokoœæ ka¿dej wspó³rzêdnej ma byæ oddzielona spacj¹, 
@@ -37,7 +37,7 @@
  \end{itemize}
   
  \subsection*{Dane wyjœciowe}
- Po zatwierdzeniu danych wejœciowych, zostaj¹ pobierane dane z bazy iNaturalist i  s¹ zapisywane do pliku na komputerze u¿ytkownika. Nastêpnie program wyœwietla wyznaczony przez u¿ytkownika obszar wraz z punktami obserwacji gatunku zagro¿onego. Obok mapy pojawia siê informacja o liczbie obserwacji oraz lista z danymi ka¿dej obserwacji takimi jak: data obserwacji, dok³adny gatunek, dane geograficzne, zdjêcie.
+ Po zatwierdzeniu przez u¿ytkownika wejœciowych danych geograficznych, na dysku w osobnym folderze \textit{obszary} zostaj¹ zapisane dane geograficzne w pliku tekstowym pod nazw¹ nazwy obszaru wprowadzonej przez u¿ytkownika w formie zgodnej z wprowadzonymi danymi przez u¿ytkownika, opisanej w poprzednim rozdziale. Nastêpnie zostaj¹ pobrane dane z bazy iNaturalist i s¹ zapisywane pod nazw¹ nazwy obszaru do pliku log na komputerze u¿ytkownika. Pobierane s¹ równie¿ zdjêcia z rozszerzeniem \textit{jpg} obserwacji pod nazwami domyœlnymi, takimi jak w  bazie internetowej, do osobnego folderu \textit{zdj}. Nastêpnie program wyœwietla wyznaczony przez u¿ytkownika obszar wraz z punktami obserwacji gatunku zagro¿onego. Obok mapy pojawia siê informacja o liczbie obserwacji oraz lista z danymi ka¿dej obserwacji takimi jak: data obserwacji, dok³adny gatunek, dane geograficzne, zdjêcie.
  
 
  \subsection*{Technologia wykonania aplikacji}
