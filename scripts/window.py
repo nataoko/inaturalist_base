@@ -89,6 +89,18 @@ class Observations(QWidget):
         self.backButton.resize(int(menu.screen_height*0.05), int(menu.screen_height*0.05))
         self.backButton.move(int(menu.screen_width*0.95), int(menu.screen_height*0.82))
         self.backButton.clicked.connect(self.back)
+
+        self.readFromDiskButton = QPushButton(self)
+        self.readFromDiskButton.setText("Wczytaj obserwacje z dysku")          
+        self.readFromDiskButton.resize(menu.button_width, menu.button_height)
+        self.readFromDiskButton.move(menu.button_width, int(menu.button_height/2))
+        self.readFromDiskButton.clicked.connect(self.read_from_disk)
+
+        self.generateFromBaseButton = QPushButton(self)
+        self.generateFromBaseButton.setText("Generuj obserwacje z bazy")          
+        self.generateFromBaseButton.resize(menu.button_width, menu.button_height)
+        self.generateFromBaseButton.move(menu.button_width, menu.button_height*2)
+        self.generateFromBaseButton.clicked.connect(self.generate_from_base)
         
     def read_from_disk(self):        
         self.readFromDisk = ReadFromDisk(self)
@@ -122,25 +134,45 @@ class AboutApp(QWidget):
         self.aboutAppLabel.setText(open("about_app.txt", "r", encoding='UTF-8').read())
         #self.aboutApptLabel.move(int(menu.screen_width*0.01), int(menu.screen_height*0.01))
 
-    def back(self):        
+    def back(self):
         menu.show()
         self.hide()
 
 class ReadFromDisk(QWidget):
     def __init__(self, parent=None):
-        super(ReadFromDisc, self).__init__()
+        super(ReadFromDisk, self).__init__()
         self.setWindowTitle('Wczytaj obserwacje z dysku')
         self.setWindowIcon(QIcon('icon.png'))
         self.resize(menu.screen_width, menu.screen_height-100)
         self.move(0,0)
 
+        self.backButton = QPushButton(self)
+        self.backButton.setIcon(QIcon("back.jpg"))
+        self.backButton.resize(int(menu.screen_height*0.05), int(menu.screen_height*0.05))
+        self.backButton.move(int(menu.screen_width*0.95), int(menu.screen_height*0.82))
+        self.backButton.clicked.connect(self.back)
+
+    def back(self):        
+        menu.obs.show()
+        self.hide()
+
 class GenerateFromBase(QWidget):
     def __init__(self, parent=None):
-        super(ReadFromDisc, self).__init__()
+        super(GenerateFromBase, self).__init__()
         self.setWindowTitle('Generuj z bazy')
         self.setWindowIcon(QIcon('icon.png'))
         self.resize(menu.screen_width, menu.screen_height-100)
         self.move(0,0)
+
+        self.backButton = QPushButton(self)
+        self.backButton.setIcon(QIcon("back.jpg"))
+        self.backButton.resize(int(menu.screen_height*0.05), int(menu.screen_height*0.05))
+        self.backButton.move(int(menu.screen_width*0.95), int(menu.screen_height*0.82))
+        self.backButton.clicked.connect(self.back)
+
+    def back(self):        
+        menu.obs.show()
+        self.hide()
 
 class Error(QWidget):
     def __init__(self):
