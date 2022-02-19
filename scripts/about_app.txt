@@ -1,0 +1,13 @@
+Cel aplikacji
+Stworzona została aplikacja, której głównym zadaniem jest prezentacja na danym obszarze obserwacji gatunków zagrożonych z określonej rodziny. Dane obserwacji będą pobierane w czasie rzeczywistym
+z bazy internetowej iNaturalist dostępnej pod adresem internetowym www.inaturalist.org. Obszary wprowadza użytkownik. Domyślnie zapisane jest kilka lokalizacji. 
+będą obejmowały rząd pieczarkowce.
+
+Technologia wykonania aplikacji
+Kod programu będzie napisany w języku Python 3.8 z użyciem m. in. biblioteki pyinaturalist.
+
+Warunki techniczne
+Aplikacja będzie możliwa do uruchomienia na innych komputerach z zainstalowanym systemem Windows. Do użytkowania aplikacji wymagane jest połączenie internetowe.
+
+O Autorze
+Natalia Okopna, kontakt: natalia.okopna@gmail.com

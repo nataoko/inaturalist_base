@@ -33,7 +33,7 @@ class Menu(QWidget):
         self.aboutAplicationButton.setText("O Aplikacji")          
         self.aboutAplicationButton.resize(self.button_width, self.button_height)
         self.aboutAplicationButton.move(self.button_width, int(self.button_height*3.5))
-        self.aboutAplicationButton.clicked.connect(self.new_area)
+        self.aboutAplicationButton.clicked.connect(self.about_app)
 
         self.versiontLabel = QLabel(self)
         self.versiontLabel.setText("v0.0.0")
@@ -49,6 +49,11 @@ class Menu(QWidget):
         self.obs.show()        
         self.hide()
 
+    def about_app(self):
+        self.aboutApp = AboutApp(self)
+        self.aboutApp.show()        
+        self.hide()
+
     def error(self):
         self.er = Error(self)
         self.er.show()        
@@ -58,8 +63,6 @@ class NewArea(QWidget):
         super(NewArea, self).__init__()
         self.setWindowTitle('Nowy obszar')
         self.setWindowIcon(QIcon('icon.png'))
-##        self.screen = QDesktopWidget().screenGeometry()
-##        self.screen_width, self.screen_height = self.screen.width(), self.screen.height()
         self.resize(menu.screen_width, menu.screen_height-100)
         self.move(0,0)
         
@@ -103,12 +106,10 @@ class Observations(QWidget):
 
 class AboutApp(QWidget):
     def __init__(self, parent=None):
-        super(Observations, self).__init__()
+        super(AboutApp, self).__init__()
         self.setWindowTitle('O Aplikacji')
         self.setWindowIcon(QIcon('icon.png'))
-        screen = QDesktopWidget().screenGeometry()
-        screen_width, screen_height = menu.screen.width(), menu.screen.height()
-        self.resize(screen_width, screen_height-100)
+        self.resize(menu.screen_width, menu.screen_height-100)
         self.move(0,0)
 
         self.backButton = QPushButton(self)
@@ -116,6 +117,10 @@ class AboutApp(QWidget):
         self.backButton.resize(int(menu.screen_height*0.05), int(menu.screen_height*0.05))
         self.backButton.move(int(menu.screen_width*0.95), int(menu.screen_height*0.82))
         self.backButton.clicked.connect(self.back)
+
+        self.aboutAppLabel = QLabel(self)
+        self.aboutAppLabel.setText(open("about_app.txt", "r", encoding='UTF-8').read())
+        #self.aboutApptLabel.move(int(menu.screen_width*0.01), int(menu.screen_height*0.01))
 
     def back(self):        
         menu.show()
