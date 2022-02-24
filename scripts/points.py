@@ -1,6 +1,11 @@
 from shapely.geometry import Polygon, Point
 
 def valid_list(lista):
+    try:
+        lista = [tup.split(',') for tup in lista.split(';')]
+        print(lista)
+    except:
+        return 8
     if geo_less_than_3(lista):
         return 1
     lista_float = geo_float(lista)
@@ -44,7 +49,7 @@ def geo_float(lista):
 #polygon.contains(Point(p))
 #folium.Marker([0, 10], popup="Znacznik").add_to(mapa)
 
-##print(valid_list([('0'), ('0','1'), ('0','2')]),
+print(valid_list("0,6,3; 0,1; 0,2"),)
 ##valid_list([('1', '0','4'), ('0','1'), ('0','2')]),
 ##valid_list([('0','a'), ('0','1'), ('0','2')]),
 ##valid_list([('a', '0'), ('0','1'), ('0','2')]),
