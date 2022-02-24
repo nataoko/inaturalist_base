@@ -36,8 +36,8 @@ class lineEditDemo(QWidget):
                 e4 = QLineEdit()
                 e4.textChanged.connect(self.textchanged)
 
-                e44 = QLineEdit()
-                e44.textChanged.connect(self.textchanged)
+                self.e44 = QLineEdit()
+                self.e44.textChanged.connect(self.textchanged)
                 
                 e4.textChanged.connect(self.textchanged)
                 e5 = QLineEdit()
@@ -49,7 +49,7 @@ class lineEditDemo(QWidget):
 
                 flo = QFormLayout()
                 flo.addRow("Obszar: Park Krajobrazory A Liczba obserwacji: 109",e4)
-                flo.addRow("Data od: 12-10-2021 do: 30-12-2021 Taxon: 12121",e44)
+                flo.addRow("Data od: 12-10-2021 do: 30-12-2021 Taxon: 12121",self.e44)
 
 ##                flo.addRow("Data od",e4)
 ##                flo.addRow("Data do",e4)
@@ -64,7 +64,8 @@ class lineEditDemo(QWidget):
                 self.setWindowTitle("Obserwacje")
 
         def textchanged(self,text):
-                print("Changed: " + text)
+                print("Changed: " + text+self.e44.text())
+                self.e44.setEchoMode
 
         def enterPress(self):
                 print("Enter pressed")

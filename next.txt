@@ -1,4 +1,0 @@
-Dodatkowe okno dla gatunku
-zatwierdzenie taxonu (wyświetlenie nazwy)
-
-sprawozdanie pokazujące drogę do osiągnięcia interface'u
