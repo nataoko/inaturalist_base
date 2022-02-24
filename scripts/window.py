@@ -2,7 +2,7 @@ import sys
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QDesktopWidget, QApplication, QWidget,\
     QPushButton, QLabel, QLineEdit, QFormLayout, QVBoxLayout, QHBoxLayout,\
-    QSizePolicy
+    QSizePolicy, QTextEdit
 from PyQt5.QtWebEngineWidgets import QWebEngineView
 import folium
 import io
@@ -132,15 +132,21 @@ class NewArea(QWidget):
         self.webEngineView.setHtml(html)
         self.webEngineView.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
         
-        #vboxmap = QVBoxLayout()
-        #vboxmap.addWidget(self.webEngineView)
+        hboxmap = QHBoxLayout()
+        hboxmap.addWidget(self.webEngineView, 1)
+
+        # points list
+        self.textEdit = QTextEdit()
+        self.textEdit.setPlainText("Lista punktów jest pusta...")
+
+        hboxmap.addWidget(self.textEdit)
 
         # layout settings
         vbox = QVBoxLayout()
         vbox.addLayout(flo)
         vbox.addLayout(hbox)
-        #vbox.addLayout(vboxmap)#self.webEngineView)
-        vbox.addWidget(self.webEngineView, 1)
+        vbox.addLayout(hboxmap)
+        #vbox.addWidget(self.webEngineView, 1)
         vbox.addLayout(hboxback)
         self.setLayout(vbox)
 
