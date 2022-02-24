@@ -1,5 +1,5 @@
 import sys
-from PyQt5.QtGui import QIcon
+from PyQt5.QtGui import QIcon, QFont
 from PyQt5.QtWidgets import QDesktopWidget, QApplication, QWidget,\
     QPushButton, QLabel, QLineEdit, QFormLayout, QVBoxLayout, QHBoxLayout,\
     QSizePolicy, QTextEdit
@@ -259,7 +259,7 @@ class GenerateFromBase(QWidget):
         backBtn = QPushButton(self)
         backBtn.setIcon(QIcon("back.jpg"))
         backBtn.resize(int(menu.screen_height*0.05),
-                               int(menu.screen_height*0.05))
+                       int(menu.screen_height*0.05))
         backBtn.move(int(menu.screen_width*0.95), int(menu.screen_height*0.82))
         backBtn.clicked.connect(self.back)
 
@@ -279,7 +279,10 @@ class Error(QWidget):
 #todo: style
 
 if __name__ == "__main__":
+    #custom_font = QFont()
+    #custom_font.setWeight(100);
     app = QApplication(sys.argv)
+    #app.setFont(custom_font, "QLabel")
     menu = Menu()
     menu.show()
     sys.exit(app.exec_())
