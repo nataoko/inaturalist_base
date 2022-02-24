@@ -1,9 +1,8 @@
 import sys
 from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import QDesktopWidget, QApplication,\
-                            QWidget, QPushButton, QLabel,\
-                            QLineEdit, QFormLayout,\
-                            QVBoxLayout, QHBoxLayout
+from PyQt5.QtWidgets import QDesktopWidget, QApplication, QWidget,\
+    QPushButton, QLabel, QLineEdit, QFormLayout, QVBoxLayout, QHBoxLayout,\
+    QSizePolicy
 from PyQt5.QtWebEngineWidgets import QWebEngineView
 import folium
 import io
@@ -114,11 +113,16 @@ class NewArea(QWidget):
         seeBtn.clicked.connect(self.see_area)
 
         hbox = QHBoxLayout()
+        hbox.addStretch(1)
         hbox.addWidget(saveBtn)
+        hbox.addStretch(1)
         hbox.addWidget(seeBtn)
+        hbox.addStretch(1)
 
         # map
-        mapa = folium.Map(width=500, height=400, location=[0,10], zoom_start=5)
+        mapa = folium.Map(width=menu.screen_width-60,
+                          height=menu.screen_height-100,
+                          location=[0,10], zoom_start=5)
         folium.TileLayer('cartodbpositron').add_to(mapa)
         folium.TileLayer('Stamen Terrain').add_to(mapa)
         folium.LayerControl().add_to(mapa)
@@ -126,12 +130,17 @@ class NewArea(QWidget):
 
         self.webEngineView = QWebEngineView()
         self.webEngineView.setHtml(html)
+        self.webEngineView.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
+        
+        #vboxmap = QVBoxLayout()
+        #vboxmap.addWidget(self.webEngineView)
 
         # layout settings
         vbox = QVBoxLayout()
         vbox.addLayout(flo)
         vbox.addLayout(hbox)
-        vbox.addWidget(self.webEngineView)
+        #vbox.addLayout(vboxmap)#self.webEngineView)
+        vbox.addWidget(self.webEngineView, 1)
         vbox.addLayout(hboxback)
         self.setLayout(vbox)
 
