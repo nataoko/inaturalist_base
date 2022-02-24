@@ -24,36 +24,48 @@ class Menu(QWidget):
 
         self.button_width = int(self.screen_width/3) 
         self.button_height = int(self.screen_height/6)
-        
-        self.newAreaButton = QPushButton(self)
-        self.newAreaButton.setText("Nowy obszar")          
-        self.newAreaButton.resize(self.button_width,
+
+        # buttons
+        newAreaButton = QPushButton(self)
+        newAreaButton.setText("Nowy obszar")          
+        newAreaButton.resize(self.button_width,
+                             self.button_height)
+        newAreaButton.move(self.button_width,
+                           int(self.button_height/2))
+        newAreaButton.clicked.connect(self.new_area)
+
+        observationsButton = QPushButton(self)
+        observationsButton.setText("Obserwacje")          
+        observationsButton.resize(self.button_width,
                                   self.button_height)
-        self.newAreaButton.move(self.button_width,
-                                int(self.button_height/2))
-        self.newAreaButton.clicked.connect(self.new_area)
-
-        self.observationsButton = QPushButton(self)
-        self.observationsButton.setText("Obserwacje")          
-        self.observationsButton.resize(self.button_width,
-                                       self.button_height)
-        self.observationsButton.move(self.button_width,
-                                     self.button_height*2)
-        self.observationsButton.clicked.connect(self.observations)
+        observationsButton.move(self.button_width,
+                                self.button_height*2)
+        observationsButton.clicked.connect(self.observations)
         
-        self.aboutAplicationButton = QPushButton(self)
-        self.aboutAplicationButton.setText("O Aplikacji")          
-        self.aboutAplicationButton.resize(self.button_width,
-                                          self.button_height)
-        self.aboutAplicationButton.move(self.button_width,
-                                        int(self.button_height*3.5))
-        self.aboutAplicationButton.clicked.connect(self.about_app)
+        aboutAplicationButton = QPushButton(self)
+        aboutAplicationButton.setText("O Aplikacji")          
+        aboutAplicationButton.resize(self.button_width,
+                                     self.button_height)
+        aboutAplicationButton.move(self.button_width,
+                                   int(self.button_height*3.5))
+        aboutAplicationButton.clicked.connect(self.about_app)
 
-        self.versiontLabel = QLabel(self)
-        self.versiontLabel.setText("v0.0.0")
-        self.versiontLabel.move(self.screen_width-50,
+        # version label
+        versionLabel = QLabel(self)
+        versionLabel.setText("v0.0.0")
+        versiontLabel.move(self.screen_width-50,
                                 self.screen_height-120)
-
+        
+##        hbox = QHBoxLayout()
+##        hbox.addStretch(1)
+##        hbox.addWidget(versionLabel)
+##
+##        # layoutsettiongs
+##        vbox = QHBoxLayout()
+##        hbox.addStretch(1)
+##        vbox.addLayout(hbox)
+##        self.setLayout(vbox)
+        
     def new_area(self):        
         self.newArea = NewArea(self)
         self.newArea.show()
@@ -82,16 +94,13 @@ class NewArea(QWidget):
         self.move(0,0)
         
         # back button
-        self.backButton = QPushButton(self)
-        self.backButton.setIcon(QIcon("back.jpg"))
-        self.backButton.resize(int(menu.screen_height*0.05),
-                               int(menu.screen_height*0.05))
-        self.backButton.move(int(menu.screen_width*0.95),
-                             int(menu.screen_height*0.82))
-        self.backButton.clicked.connect(self.back)
+        backButton = QPushButton()
+        backButton.setIcon(QIcon("back.jpg"))
+        backButton.clicked.connect(self.back)
         
         hboxback = QHBoxLayout()
-        hboxback.addWidget(self.backButton)
+        hboxback.addStretch(1)
+        hboxback.addWidget(backButton)
 
         # edit lines
         lineName = QLineEdit()
@@ -102,25 +111,17 @@ class NewArea(QWidget):
         flo.addRow("Dane geograficzne",lineLoc)
 
         # save and see buttons
-        self.saveButton = QPushButton(self)
-        self.saveButton.setText("Zapisz wprowadzony obszar")
-        self.saveButton.resize(int(menu.screen_width*0.25),
-                               30)
-        self.saveButton.move(int(menu.screen_width*0.167),
-                             80)
-        self.saveButton.clicked.connect(self.save_area)
+        saveButton = QPushButton(self)
+        saveButton.setText("Zapisz wprowadzony obszar")
+        saveButton.clicked.connect(self.save_area)
 
-        self.seeButton = QPushButton(self)
-        self.seeButton.setText("Zobacz wprowadzony obszar")
-        self.seeButton.resize(int(menu.screen_width*0.25),
-                               30)
-        self.seeButton.move(int(menu.screen_width*0.583),
-                             80)
-        self.seeButton.clicked.connect(self.see_area)
+        seeButton = QPushButton(self)
+        seeButton.setText("Zobacz wprowadzony obszar")
+        seeButton.clicked.connect(self.see_area)
 
         hbox = QHBoxLayout()
-        hbox.addWidget(self.saveButton)
-        hbox.addWidget(self.seeButton)
+        hbox.addWidget(saveButton)
+        hbox.addWidget(seeButton)
 
         # map
         mapa = folium.Map(width=500, height=400,
@@ -130,7 +131,7 @@ class NewArea(QWidget):
         folium.LayerControl().add_to(mapa)
         html = mapa._repr_html_()
 
-        self.webEngineView = QWebEngineView(self)
+        self.webEngineView = QWebEngineView()
         self.webEngineView.setHtml(html)
 
         # layout settings
@@ -159,29 +160,30 @@ class Observations(QWidget):
         self.resize(menu.screen_width, menu.screen_height-100)
         self.move(0,0)
 
-        self.backButton = QPushButton(self)
-        self.backButton.setIcon(QIcon("back.jpg"))
-        self.backButton.resize(int(menu.screen_height*0.05),
+        # buttons
+        backButton = QPushButton(self)
+        backButton.setIcon(QIcon("back.jpg"))
+        backButton.resize(int(menu.screen_height*0.05),
                                int(menu.screen_height*0.05))
-        self.backButton.move(int(menu.screen_width*0.95),
+        backButton.move(int(menu.screen_width*0.95),
                              int(menu.screen_height*0.82))
-        self.backButton.clicked.connect(self.back)
+        backButton.clicked.connect(self.back)
 
-        self.readFromDiskButton = QPushButton(self)
-        self.readFromDiskButton.setText("Wczytaj obserwacje z dysku")          
-        self.readFromDiskButton.resize(menu.button_width,
+        readFromDiskButton = QPushButton(self)
+        readFromDiskButton.setText("Wczytaj obserwacje z dysku")          
+        readFromDiskButton.resize(menu.button_width,
                                        menu.button_height)
-        self.readFromDiskButton.move(menu.button_width,
+        readFromDiskButton.move(menu.button_width,
                                      int(menu.button_height/2))
-        self.readFromDiskButton.clicked.connect(self.read_from_disk)
+        readFromDiskButton.clicked.connect(self.read_from_disk)
 
-        self.generateFromBaseButton = QPushButton(self)
-        self.generateFromBaseButton.setText("Generuj obserwacje z bazy")          
-        self.generateFromBaseButton.resize(menu.button_width,
+        generateFromBaseButton = QPushButton(self)
+        generateFromBaseButton.setText("Generuj obserwacje z bazy")          
+        generateFromBaseButton.resize(menu.button_width,
                                            menu.button_height)
-        self.generateFromBaseButton.move(menu.button_width,
+        generateFromBaseButton.move(menu.button_width,
                                          menu.button_height*2)
-        self.generateFromBaseButton.clicked.connect(self.generate_from_base)
+        generateFromBaseButton.clicked.connect(self.generate_from_base)
         
     def read_from_disk(self):        
         self.readFromDisk = ReadFromDisk(self)
@@ -205,16 +207,16 @@ class AboutApp(QWidget):
         self.resize(menu.screen_width, menu.screen_height-100)
         self.move(0,0)
 
-        self.backButton = QPushButton(self)
-        self.backButton.setIcon(QIcon("back.jpg"))
-        self.backButton.resize(int(menu.screen_height*0.05),
+        backButton = QPushButton(self)
+        backButton.setIcon(QIcon("back.jpg"))
+        backButton.resize(int(menu.screen_height*0.05),
                                int(menu.screen_height*0.05))
-        self.backButton.move(int(menu.screen_width*0.95),
-                             int(menu.screen_height*0.82))
-        self.backButton.clicked.connect(self.back)
+        backButton.move(int(menu.screen_width*0.95),
+                            int(menu.screen_height*0.82))
+        backButton.clicked.connect(self.back)
 
-        self.aboutAppLabel = QLabel(self)
-        self.aboutAppLabel.setText(open("about_app.txt", "r",
+        aboutAppLabel = QLabel(self)
+        aboutAppLabel.setText(open("about_app.txt", "r",
                                         encoding='UTF-8').read())
         #self.aboutApptLabel.move(int(menu.screen_width*0.01), int(menu.screen_height*0.01))
 
@@ -230,13 +232,14 @@ class ReadFromDisk(QWidget):
         self.resize(menu.screen_width, menu.screen_height-100)
         self.move(0,0)
 
-        self.backButton = QPushButton(self)
-        self.backButton.setIcon(QIcon("back.jpg"))
-        self.backButton.resize(int(menu.screen_height*0.05),
-                               int(menu.screen_height*0.05))
-        self.backButton.move(int(menu.screen_width*0.95),
-                             int(menu.screen_height*0.82))
-        self.backButton.clicked.connect(self.back)
+        # back button
+        backButton = QPushButton(self)
+        backButton.setIcon(QIcon("back.jpg"))
+        backButton.resize(int(menu.screen_height*0.05),
+                          int(menu.screen_height*0.05))
+        backButton.move(int(menu.screen_width*0.95),
+                        int(menu.screen_height*0.82))
+        backButton.clicked.connect(self.back)
 
     def back(self):        
         menu.obs.show()
@@ -250,13 +253,14 @@ class GenerateFromBase(QWidget):
         self.resize(menu.screen_width, menu.screen_height-100)
         self.move(0,0)
 
-        self.backButton = QPushButton(self)
-        self.backButton.setIcon(QIcon("back.jpg"))
-        self.backButton.resize(int(menu.screen_height*0.05),
+        # back button
+        backButton = QPushButton(self)
+        backButton.setIcon(QIcon("back.jpg"))
+        backButton.resize(int(menu.screen_height*0.05),
                                int(menu.screen_height*0.05))
-        self.backButton.move(int(menu.screen_width*0.95),
+        backButton.move(int(menu.screen_width*0.95),
                              int(menu.screen_height*0.82))
-        self.backButton.clicked.connect(self.back)
+        backButton.clicked.connect(self.back)
 
     def back(self):        
         menu.obs.show()
