@@ -1,4 +1,4 @@
-#luźne pomysły: podświetlenie punktu
+#luźne pomysły: podświetlenie punktu, wyświetlanie obszaru, który nie jest spójny
 
 import sys
 from PyQt5.QtGui import QIcon, QFont
@@ -101,7 +101,7 @@ class NewArea(QWidget):
 
         # edit lines
         lineName = QLineEdit()
-        #lineName.setInputMask('Park krajobrazowy A')
+        #lineName.setInputMask('Park krajobrazowy A') #todo: default grey values
         self.lineLoc = QLineEdit()#10 ,0; 10 ,1;10.5 ,0.5;11 ,1;11 ,0
         
         flo = QFormLayout()
@@ -110,7 +110,7 @@ class NewArea(QWidget):
 
         # save and see buttons
         saveBtn = QPushButton(self)
-        saveBtn.setText('Zapisz wprowadzony obszar')
+        saveBtn.setText('Zapisz wprowadzony obszar')#add icon 
         saveBtn.clicked.connect(self.save_area)
 
         seeBtn = QPushButton(self)
@@ -161,6 +161,9 @@ class NewArea(QWidget):
 
     def save_area(self):# todo: shortcut alt enter
         pass
+        # todo: check name
+        # todo: generate area and ask ---dialog window
+        # todo: save
 
     def see_area(self):# todo: shortcut ctr enter
         lista = valid_list(self.lineLoc.text())
@@ -172,21 +175,20 @@ class NewArea(QWidget):
             self.textEdit.setPlainText('\n'.join(map(str, lista)))
             
             # map update #todo: chceck loc what is first here, todo:zoom edit
-            self.textEdit.setPlainText('\n'.join(map(str, lista)))
-            self.mapa = folium.Map(width=menu.screen_width-60,
-                          height=menu.screen_height-100,
-                          location=lista[0][::-1], zoom_start=5)
             polygon = valid_polygon(lista)
-            folium.GeoJson(polygon).add_to(self.mapa)
-            folium.TileLayer('cartodbpositron').add_to(self.mapa)
-            folium.TileLayer('Stamen Terrain').add_to(self.mapa)
-            folium.LayerControl().add_to(self.mapa)
-            self.html = self.mapa._repr_html_()
-            self.webEngineView.setHtml(self.html)
             try:
                 error = int(polygon)
                 print(error)#todo: error okno
             except:
+                self.mapa = folium.Map(width=menu.screen_width-60,
+                          height=menu.screen_height-100,
+                          location=lista[0][::-1], zoom_start=5)
+                folium.GeoJson(polygon).add_to(self.mapa)
+                folium.TileLayer('cartodbpositron').add_to(self.mapa)
+                folium.TileLayer('Stamen Terrain').add_to(self.mapa)
+                folium.LayerControl().add_to(self.mapa)
+                self.html = self.mapa._repr_html_()
+                self.webEngineView.setHtml(self.html)
                 print('obszar poprawnie skonstruowany')#todo: error okno               
 
 class Observations(QWidget):
