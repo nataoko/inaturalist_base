@@ -1,4 +1,15 @@
-#luźne pomysły: podświetlenie punktu, wyświetlanie obszaru, który nie jest spójny
+#luźne pomysły: podświetlenie punktu,
+##1. Co ma się dziać po zamknięciu okna Nowy obszar.
+##2. Usunąć wyświetlanie numeru taksonu w nazwach zapisanych obserwacji.
+##3. Kwestie usuwania i edycji zapisanych obszarów.
+##4. Kopia zapasowa pliku json z zapisanymi danymi.
+##5. Skrypt do generowania początkowego pliku json. Obsługa wyjątków w razie błędu pliku json.
+#wyświetlanie obszaru, który nie jest spójny
+# Uwzględnienie obsługi obszaru: nadpisanie, delecja, wyświetlanie.
+# Akceptowalne inne nazwy obszarów (?)
+#todo: mapa --- dopasowanie do ekranu
+        #todo:automatycznie duże guziki i napisy ; layouty zmienić
+#todo: style, fontsize
 
 import sys
 from PyQt5.QtGui import QIcon, QFont
@@ -8,8 +19,10 @@ from PyQt5.QtWidgets import QDesktopWidget, QApplication, QWidget,\
 from PyQt5.QtWebEngineWidgets import QWebEngineView
 import folium
 import io
+import os
 
 from points import valid_list, valid_polygon
+#from saving import valid_name
 
 class Menu(QWidget):
     def __init__(self):
@@ -18,7 +31,7 @@ class Menu(QWidget):
 
     def initUI(self):
         self.setWindowTitle('Menu')
-        self.setWindowIcon(QIcon('icon.png'))
+        self.setWindowIcon(QIcon('data'+os.sep+'icon.png'))
         self.screen = QDesktopWidget().screenGeometry()
         self.screen_width = self.screen.width()
         self.screen_height = self.screen.height()
@@ -86,13 +99,13 @@ class NewArea(QWidget):
     def __init__(self, parent=None):
         super(NewArea, self).__init__()
         self.setWindowTitle('Nowy obszar')
-        self.setWindowIcon(QIcon('icon.png'))
+        self.setWindowIcon(QIcon('data'+os.sep+'icon.png'))
         self.resize(menu.screen_width, menu.screen_height-100)
         self.move(0,0)
         
         # back button
         backBtn = QPushButton()
-        backBtn.setIcon(QIcon('back.jpg'))
+        backBtn.setIcon(QIcon('data'+os.sep+'back.jpg'))
         backBtn.clicked.connect(self.back)
         
         hboxback = QHBoxLayout()
@@ -100,12 +113,12 @@ class NewArea(QWidget):
         hboxback.addWidget(backBtn)
 
         # edit lines
-        lineName = QLineEdit()
+        self.lineName = QLineEdit()
         #lineName.setInputMask('Park krajobrazowy A') #todo: default grey values
         self.lineLoc = QLineEdit()#10 ,0; 10 ,1;10.5 ,0.5;11 ,1;11 ,0
         
         flo = QFormLayout()
-        flo.addRow('Nazwa obszaru',lineName)
+        flo.addRow('Nazwa obszaru',self.lineName)
         flo.addRow('Dane geograficzne',self.lineLoc)
 
         # save and see buttons
@@ -125,9 +138,9 @@ class NewArea(QWidget):
         hbox.addStretch(1)
 
         # map
-        self.mapa = folium.Map(width=menu.screen_width-60,
-                          height=menu.screen_height-100,
-                          location=[0,10], zoom_start=2)
+        self.mapa = folium.Map(width=int(menu.screen_width*0.83),
+                          height=int(menu.screen_height*0.85),
+                          location=[0,10], zoom_start=3)
         folium.TileLayer('cartodbpositron').add_to(self.mapa)
         folium.TileLayer('Stamen Terrain').add_to(self.mapa)
         folium.LayerControl().add_to(self.mapa)
@@ -161,8 +174,10 @@ class NewArea(QWidget):
 
     def save_area(self):# todo: shortcut alt enter
         pass
-        # todo: check name
-        # todo: generate area and ask ---dialog window
+        # name chacking
+        valid_name(self.lineName.text())
+        
+        # todo: generate area and ask --- dialog window
         # todo: save
 
     def see_area(self):# todo: shortcut ctr enter
@@ -195,13 +210,13 @@ class Observations(QWidget):
     def __init__(self, parent=None):
         super(Observations, self).__init__()
         self.setWindowTitle('Obserwacje')
-        self.setWindowIcon(QIcon('icon.png'))
+        self.setWindowIcon(QIcon('data'+os.sep+'icon.png'))
         self.resize(menu.screen_width, menu.screen_height-100)
         self.move(0,0)
 
         # buttons
         backBtn = QPushButton(self)
-        backBtn.setIcon(QIcon('back.jpg'))
+        backBtn.setIcon(QIcon('data'+os.sep+'back.jpg'))
         backBtn.resize(int(menu.screen_height*0.05),
                        int(menu.screen_height*0.05))
         backBtn.move(int(menu.screen_width*0.95), int(menu.screen_height*0.82))
@@ -237,19 +252,19 @@ class AboutApp(QWidget):
     def __init__(self, parent=None):
         super(AboutApp, self).__init__()
         self.setWindowTitle('O Aplikacji')
-        self.setWindowIcon(QIcon('icon.png'))
+        self.setWindowIcon(QIcon('data'+os.sep+'icon.png'))
         self.resize(menu.screen_width, menu.screen_height-100)
         self.move(0,0)
 
         backBtn = QPushButton(self)
-        backBtn.setIcon(QIcon('back.jpg'))
+        backBtn.setIcon(QIcon('data'+os.sep+'back.jpg'))
         backBtn.resize(int(menu.screen_height*0.05),
                        int(menu.screen_height*0.05))
         backBtn.move(int(menu.screen_width*0.95), int(menu.screen_height*0.82))
         backBtn.clicked.connect(self.back)
 
         aboutAppLabel = QLabel(self)
-        aboutAppLabel.setText(open('about_app.txt', 'r',
+        aboutAppLabel.setText(open('data'+os.sep+'about_app.txt', 'r',
                                    encoding='UTF-8'
                                    ).read())
         #self.aboutApptLabel.move(int(menu.screen_width*0.01), int(menu.screen_height*0.01))
@@ -262,13 +277,13 @@ class ReadFromDisk(QWidget):
     def __init__(self, parent=None):
         super(ReadFromDisk, self).__init__()
         self.setWindowTitle('Wczytaj obserwacje z dysku')
-        self.setWindowIcon(QIcon('icon.png'))
+        self.setWindowIcon(QIcon('data'+os.sep+'icon.png'))
         self.resize(menu.screen_width, menu.screen_height-100)
         self.move(0,0)
 
         # back button
         backBtn = QPushButton(self)
-        backBtn.setIcon(QIcon('back.jpg'))
+        backBtn.setIcon(QIcon('data'+os.sep+'back.jpg'))
         backBtn.resize(int(menu.screen_height*0.05),
                        int(menu.screen_height*0.05))
         backBtn.move(int(menu.screen_width*0.95), int(menu.screen_height*0.82))
@@ -282,13 +297,13 @@ class GenerateFromBase(QWidget):
     def __init__(self, parent=None):
         super(GenerateFromBase, self).__init__()
         self.setWindowTitle('Generuj z bazy')
-        self.setWindowIcon(QIcon('icon.png'))
+        self.setWindowIcon(QIcon('data'+os.sep+'icon.png'))
         self.resize(menu.screen_width, menu.screen_height-100)
         self.move(0,0)
 
         # back button
         backBtn = QPushButton(self)
-        backBtn.setIcon(QIcon('back.jpg'))
+        backBtn.setIcon(QIcon('data'+os.sep+'back.jpg'))
         backBtn.resize(int(menu.screen_height*0.05),
                        int(menu.screen_height*0.05))
         backBtn.move(int(menu.screen_width*0.95), int(menu.screen_height*0.82))
@@ -302,19 +317,25 @@ class Error(QWidget):
     def __init__(self):
         super(ReadFromDisc, self).__init__()
         self.setWindowTitle('Błąd')
-        self.setWindowIcon(QIcon('icon.png'))
-    
-
-#todo: mapa --- dopadowanie do ekranu
-        #todo:automatycznie duże guziki i napisy ; layouty zmienić
-#todo: style, fontsize
+        self.setWindowIcon(QIcon('data'+os.sep+'icon.png'))
 
 if __name__ == '__main__':
-    #custom_font = QFont()
-    #custom_font.setWeight(100);
+    # Open error's messages
+
+    # Stworzenie aplikacji
     app = QApplication(sys.argv)
-    #app.setFont(custom_font, 'QLabel')
+    
+    # Font settings
+    custom_font = QFont()
+    #custom_font.setWeight(100)
+    custom_font.setPixelSize(20)
+    app.setFont(custom_font, 'QLabel')
+    app.setFont(custom_font, 'QWidget')
+
+    # Show app
     menu = Menu()
     menu.show()
+
+    # App exit
     sys.exit(app.exec_())
    

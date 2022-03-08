@@ -1,0 +1,20 @@
+            self.mapa = folium.Map(width=menu.screen_width-60,
+                          height=menu.screen_height-100,
+                          location=lista[0][::-1], zoom_start=5)
+            polygon = Polygon(lista)
+            folium.GeoJson(polygon).add_to(self.mapa)
+            folium.TileLayer('cartodbpositron').add_to(self.mapa)
+            folium.TileLayer('Stamen Terrain').add_to(self.mapa)
+            folium.LayerControl().add_to(self.mapa)
+            self.html = self.mapa._repr_html_()
+            self.webEngineView.setHtml(self.html)
+            if polygon.is_valid:
+                error = int(polygon)
+                print(error)#todo: error okno
+            else:
+                print('obszar poprawnie skonstruowany')#todo: error okno  
+
+open_data = lambda: json.load(open('data'+os.sep+'data.json'))
+
+valid_name = lambda name, data: 1 if not name.isalnum() \
+             else 2 if name in data['areas'] else 0
