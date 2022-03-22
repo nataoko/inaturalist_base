@@ -131,28 +131,18 @@ class NewArea(QWidget):
         hbox_back.addWidget(back_btn)
 
         # edit lines
-        #self.lineName = QLineEdit()
-        # lineName.setInputMask('Park krajobrazowy A') #todo: default grey values
-        self.lineLoc = QLineEdit()  # 10 ,0; 10 ,1;10.5 ,0.5;11 ,1;11 ,0
+        self.lineLoc = QLineEdit()  #todo: default grey values 10 ,0; 10 ,1;10.5 ,0.5;11 ,1;11 ,0
 
         flo = QFormLayout()
-        #flo.addRow('Nazwa obszaru', self.lineName)
         flo.addRow('Dane geograficzne', self.lineLoc)
 
-        ## save and see buttons
-        #saveBtn = QPushButton(self)
-        #saveBtn.setText('Zapisz wprowadzony obszar')  # add icon
-        #saveBtn.clicked.connect(self.save_area)
-
-        seeBtn = QPushButton(self)
-        seeBtn.setText('Zobacz wprowadzony obszar')
-        seeBtn.clicked.connect(self.see_area)
+        see_btn = QPushButton(self)
+        see_btn.setText('Zobacz wprowadzony obszar')
+        see_btn.clicked.connect(self.see_area)
 
         hbox = QHBoxLayout()
-        #hbox.addStretch(1)
-        #hbox.addWidget(saveBtn)
         hbox.addStretch(1)
-        hbox.addWidget(seeBtn)
+        hbox.addWidget(see_btn)
         hbox.addStretch(1)
 
         # map
@@ -168,21 +158,20 @@ class NewArea(QWidget):
         self.webEngineView.setHtml(self.html)
         # self.webEngineView.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
 
-        hboxmap = QHBoxLayout()
-        hboxmap.addWidget(self.webEngineView, 1)
+        hbox_map = QHBoxLayout()
+        hbox_map.addWidget(self.webEngineView, 1)
 
         # points list
         self.textEdit = QTextEdit()
-        self.textEdit.setPlainText('Lista punktów jest pusta...')  # todo: edit or not
+        self.textEdit.setPlainText('Lista punktów jest pusta...')  # todo: editable point list
 
-        hboxmap.addWidget(self.textEdit)
+        hbox_map.addWidget(self.textEdit)
 
         # layout settings
         vbox = QVBoxLayout()
         vbox.addLayout(flo)
         vbox.addLayout(hbox)
-        vbox.addLayout(hboxmap)
-        # vbox.addWidget(self.webEngineView, 1)
+        vbox.addLayout(hbox_map)
         vbox.addLayout(hbox_back)
         self.setLayout(vbox)
 
@@ -191,13 +180,6 @@ class NewArea(QWidget):
         self.hide()
 
     def save_area(self):  # todo: shortcut alt enter
-        pass
-        # name checking
-        # valid_name(self.lineName.text())
-
-        # todo: generate area and ask --- dialog window
-        # todo: save
-
         area_name, save = QInputDialog.getText(self, 'Zapisywanie obszaru', 'Podaj nazwę')
         if save:
             area_name = 'area' + area_name
@@ -237,11 +219,11 @@ class NewArea(QWidget):
                 self.webEngineView.setHtml(self.html)
                 print('obszar poprawnie skonstruowany')  # todo: error okno zapisać?
 
-                # okno potwierdzające
-                rplyMsbox = QMessageBox.question(self, 'Poprawnie skonstruowano obszar',
+                # messagebox
+                reppli_msbox = QMessageBox.question(self, 'Poprawnie skonstruowano obszar',
                                                  'Obszar poprawnie skonstruowany.\nAby zapisać, kliknij \"Yes\".',
                                                  QMessageBox.Yes | QMessageBox.Cancel)
-                if rplyMsbox == QMessageBox.Yes:
+                if reppli_msbox == QMessageBox.Yes:
                     self.loc = lista
                     self.save_area()
 
