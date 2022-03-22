@@ -1,15 +1,25 @@
 import json
 import os
+import shutil
 
-def open_data:
+
+
+def open_data():
+    shutil.copyfile('data'+os.sep+'data.json', 'data'+os.sep+'data_bk.json')
     return json.load(open('data'+os.sep+'data.json'))
+
 
 def valid_name(name, data):
     if not name.isalnum():
         return 1
     if name in data['areas']:
         return 2
-    return 0
+    return name
 
-v = valid_name('2', open_data())
-print(v)
+
+def save_new_area(name, locs, data):
+    data['areas'][name] = locs
+    with open('data'+os.sep+'data.json', 'w') as outfile:
+        outfile.write(json.dumps(data))
+    return data
+

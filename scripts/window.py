@@ -1,4 +1,5 @@
-# luźne pomysły: podświetlenie punktu,
+# This Python file uses the following encoding: utf-8
+# ## luźne pomysły: podświetlenie punktu,
 ##1. Co ma się dziać po zamknięciu okna Nowy obszar.
 ##2. Usunąć wyświetlanie numeru taksonu w nazwach zapisanych obserwacji.
 ##3. Kwestie usuwania i edycji zapisanych obszarów.
@@ -15,16 +16,18 @@ import sys
 from PyQt5.QtGui import QIcon, QFont
 from PyQt5.QtWidgets import QDesktopWidget, QApplication, QWidget, \
     QPushButton, QLabel, QLineEdit, QFormLayout, QVBoxLayout, QHBoxLayout, \
-    QSizePolicy, QTextEdit, QMessageBox
+    QSizePolicy, QTextEdit, QMessageBox, QInputDialog
 from PyQt5.QtWebEngineWidgets import QWebEngineView
+from PyQt5.QtCore import Qt
 import folium
 import io
 import os
 
 from points import valid_list, valid_polygon
 
-# from saving import valid_name
+from saving import *
 
+DATA = open_data()
 ERRORS = {
     'PointList': {
         1: 'Lista ma mniej niż 3 elementy!',
@@ -37,7 +40,7 @@ ERRORS = {
         8: 'Zły format!\nPoprawny format: x, y; x, y ; x, y.\nCzytaj więcej w instrukcji.',
     },
     'Name': {
-        1: 'Nazwa musi zawierać jedunie znaki alfanumeryczne!',
+        1: 'Nazwa musi zawierać jedynie znaki alfanumeryczne!',
         2: 'Obszar o podanej nazwie istnieje. Wybierz inną nazwę.',
     }
 }
@@ -56,6 +59,7 @@ class Menu(QWidget):
     def __init__(self):
         super(Menu, self).__init__()
         self.initUI()
+        # self.data = DATA
 
     def initUI(self):
         self.setWindowTitle('Menu')
@@ -127,10 +131,12 @@ class Menu(QWidget):
 class NewArea(QWidget):
     def __init__(self, parent=None):
         super(NewArea, self).__init__()
+        self.loc = None
         self.setWindowTitle('Nowy obszar')
         self.setWindowIcon(QIcon('data' + os.sep + 'icon.png'))
         self.resize(menu.screen_width, menu.screen_height - 100)
         self.move(0, 0)
+        self.data = DATA
 
         # back button
         backBtn = QPushButton()
@@ -203,11 +209,25 @@ class NewArea(QWidget):
 
     def save_area(self):  # todo: shortcut alt enter
         pass
-        # name chacking
+        # name checking
         # valid_name(self.lineName.text())
 
         # todo: generate area and ask --- dialog window
         # todo: save
+
+        area_name, save = QInputDialog.getText(self, 'Zapisywanie obszaru', 'Podaj nazwę')
+        if save:
+            area_name = 'area' + area_name
+            print(str(area_name))
+            area_name = valid_name(area_name, self.data)
+            try:
+                error = int(area_name)
+                error_show('Name', error, 'nazwa')
+            except:
+                self.data = save_new_area(area_name[4:], self.loc, self.data)
+                mbox = QMessageBox()
+                QMessageBox.setText(mbox, 'Poprawnie zapisano obszar')
+                mbox.exec()
 
     def see_area(self):  # todo: shortcut ctr enter
         lista = valid_list(self.lineLoc.text())
@@ -235,9 +255,21 @@ class NewArea(QWidget):
                 print('obszar poprawnie skonstruowany')  # todo: error okno zapisać?
 
                 # okno potwierdzające
-                reply = QMessageBox.question(self, 'Poprawnie skonstruowano obszar',
-                                             'Obszar poprawnie skonstruowany.\nAby zapisać, kliknij Zapisz wprowadzony obszar',
-                                             QMessageBox.Cancel)
+                rplyMsbox = QMessageBox.question(self, 'Poprawnie skonstruowano obszar',
+                                                 'Obszar poprawnie skonstruowany.\nAby zapisać, kliknij \"Yes\".',
+                                                 QMessageBox.Yes | QMessageBox.Cancel)
+                if rplyMsbox == QMessageBox.Yes:
+                    self.loc = lista
+                    self.save_area()
+
+
+    def onClick(self):
+        pass
+        # msgbox = QMessageBox()
+        # msgbox.setText('to select click "show details"')
+        # msgbox.setTextInteractionFlags(Qt.NoTextInteraction)  # (QtCore.Qt.TextSelectableByMouse)
+        # msgbox.setDetailedText('line 1\nline 2\nline 3')
+        # msgbox.exec()
 
 
 class Observations(QWidget):
