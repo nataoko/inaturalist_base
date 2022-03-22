@@ -1,9 +1,9 @@
 # This Python file uses the following encoding: utf-8
 # ## luźne pomysły: podświetlenie punktu,
-##1. Co ma się dziać po zamknięciu okna Nowy obszar.
+##1. Co ma się dziać po zamknięciu okna Nowy obszar. (zapmknięcie aplikacji)OK
 ##2. Usunąć wyświetlanie numeru taksonu w nazwach zapisanych obserwacji.
 ##3. Kwestie usuwania i edycji zapisanych obszarów.
-##4. Kopia zapasowa pliku json z zapisanymi danymi.
+##4. Kopia zapasowa pliku json z zapisanymi danymi. (pierwsza wersja)OK
 ##5. Skrypt do generowania początkowego pliku json. Obsługa wyjątków w razie błędu pliku json.
 # wyświetlanie obszaru, który nie jest spójny
 # Uwzględnienie obsługi obszaru: nadpisanie, delecja, wyświetlanie.
@@ -16,12 +16,9 @@ import sys
 from PyQt5.QtGui import QIcon, QFont
 from PyQt5.QtWidgets import QDesktopWidget, QApplication, QWidget, \
     QPushButton, QLabel, QLineEdit, QFormLayout, QVBoxLayout, QHBoxLayout, \
-    QSizePolicy, QTextEdit, QMessageBox, QInputDialog
+    QTextEdit, QMessageBox, QInputDialog
 from PyQt5.QtWebEngineWidgets import QWebEngineView
-from PyQt5.QtCore import Qt
 import folium
-import io
-import os
 
 from points import valid_list, valid_polygon
 
@@ -58,55 +55,45 @@ def error_show(name, error, name_long):
 class Menu(QWidget):
     def __init__(self):
         super(Menu, self).__init__()
+        self.aboutApp = None
+        self.obs = None
+        self.newArea = None
+        self.screen = QDesktopWidget().screenGeometry()
+        self.screen_height = self.screen.height()
+        self.screen_width = self.screen.width()
+        self.btn_height = int(self.screen_height / 6)
+        self.btn_width = int(self.screen_width / 3)
         self.initUI()
-        # self.data = DATA
 
     def initUI(self):
         self.setWindowTitle('Menu')
         self.setWindowIcon(QIcon('data' + os.sep + 'icon.png'))
-        self.screen = QDesktopWidget().screenGeometry()
-        self.screen_width = self.screen.width()
-        self.screen_height = self.screen.height()
         self.resize(self.screen_width, self.screen_height - 100)
         self.move(0, 0)
 
-        self.btn_width = int(self.screen_width / 3)
-        self.btn_height = int(self.screen_height / 6)
-
         # buttons
-        newAreaBtn = QPushButton(self)
-        newAreaBtn.setText('Nowy obszar')
-        newAreaBtn.resize(self.btn_width, self.btn_height)
-        newAreaBtn.move(self.btn_width, int(self.btn_height / 2))
-        newAreaBtn.clicked.connect(self.new_area)
+        new_area_btn = QPushButton(self)
+        new_area_btn.setText('Nowy obszar')
+        new_area_btn.resize(self.btn_width, self.btn_height)
+        new_area_btn.move(self.btn_width, int(self.btn_height / 2))
+        new_area_btn.clicked.connect(self.new_area)
 
-        obsBtn = QPushButton(self)
-        obsBtn.setText('Obserwacje')
-        obsBtn.resize(self.btn_width, self.btn_height)
-        obsBtn.move(self.btn_width, self.btn_height * 2)
-        obsBtn.clicked.connect(self.observations)
+        obs_btn = QPushButton(self)
+        obs_btn.setText('Obserwacje')
+        obs_btn.resize(self.btn_width, self.btn_height)
+        obs_btn.move(self.btn_width, self.btn_height * 2)
+        obs_btn.clicked.connect(self.observations)
 
-        aboutAppBtn = QPushButton(self)
-        aboutAppBtn.setText('O Aplikacji')
-        aboutAppBtn.resize(self.btn_width, self.btn_height)
-        aboutAppBtn.move(self.btn_width, int(self.btn_height * 3.5))
-        aboutAppBtn.clicked.connect(self.about_app)
+        about_app_btn = QPushButton(self)
+        about_app_btn.setText('O Aplikacji')
+        about_app_btn.resize(self.btn_width, self.btn_height)
+        about_app_btn.move(self.btn_width, int(self.btn_height * 3.5))
+        about_app_btn.clicked.connect(self.about_app)
 
         # version label
-        versionLabel = QLabel(self)
-        versionLabel.setText('v0.0.0')
-        versionLabel.move(self.screen_width - 50,
-                          self.screen_height - 120)
-
-    ##        hbox = QHBoxLayout()
-    ##        hbox.addStretch(1)
-    ##        hbox.addWidget(versionLabel)
-    ##
-    ##        # layoutsettiongs
-    ##        vbox = QHBoxLayout()
-    ##        hbox.addStretch(1)
-    ##        vbox.addLayout(hbox)
-    ##        self.setLayout(vbox)
+        version_label = QLabel(self)
+        version_label.setText('v0.0.0')
+        version_label.move(self.screen_width - 50, self.screen_height - 120)
 
     def new_area(self):
         self.newArea = NewArea(self)
@@ -123,10 +110,6 @@ class Menu(QWidget):
         self.aboutApp.show()
         self.hide()
 
-    def error(self):
-        self.er = Error(self)
-        self.er.show()
-
 
 class NewArea(QWidget):
     def __init__(self, parent=None):
@@ -139,35 +122,35 @@ class NewArea(QWidget):
         self.data = DATA
 
         # back button
-        backBtn = QPushButton()
-        backBtn.setIcon(QIcon('data' + os.sep + 'back.jpg'))
-        backBtn.clicked.connect(self.back)
+        back_btn = QPushButton()
+        back_btn.setIcon(QIcon('data' + os.sep + 'back.jpg'))
+        back_btn.clicked.connect(self.back)
 
-        hboxback = QHBoxLayout()
-        hboxback.addStretch(1)
-        hboxback.addWidget(backBtn)
+        hbox_back = QHBoxLayout()
+        hbox_back.addStretch(1)
+        hbox_back.addWidget(back_btn)
 
         # edit lines
-        self.lineName = QLineEdit()
+        #self.lineName = QLineEdit()
         # lineName.setInputMask('Park krajobrazowy A') #todo: default grey values
         self.lineLoc = QLineEdit()  # 10 ,0; 10 ,1;10.5 ,0.5;11 ,1;11 ,0
 
         flo = QFormLayout()
-        flo.addRow('Nazwa obszaru', self.lineName)
+        #flo.addRow('Nazwa obszaru', self.lineName)
         flo.addRow('Dane geograficzne', self.lineLoc)
 
-        # save and see buttons
-        saveBtn = QPushButton(self)
-        saveBtn.setText('Zapisz wprowadzony obszar')  # add icon
-        saveBtn.clicked.connect(self.save_area)
+        ## save and see buttons
+        #saveBtn = QPushButton(self)
+        #saveBtn.setText('Zapisz wprowadzony obszar')  # add icon
+        #saveBtn.clicked.connect(self.save_area)
 
         seeBtn = QPushButton(self)
         seeBtn.setText('Zobacz wprowadzony obszar')
         seeBtn.clicked.connect(self.see_area)
 
         hbox = QHBoxLayout()
-        hbox.addStretch(1)
-        hbox.addWidget(saveBtn)
+        #hbox.addStretch(1)
+        #hbox.addWidget(saveBtn)
         hbox.addStretch(1)
         hbox.addWidget(seeBtn)
         hbox.addStretch(1)
@@ -200,7 +183,7 @@ class NewArea(QWidget):
         vbox.addLayout(hbox)
         vbox.addLayout(hboxmap)
         # vbox.addWidget(self.webEngineView, 1)
-        vbox.addLayout(hboxback)
+        vbox.addLayout(hbox_back)
         self.setLayout(vbox)
 
     def back(self):
@@ -224,7 +207,7 @@ class NewArea(QWidget):
                 error = int(area_name)
                 error_show('Name', error, 'nazwa')
             except:
-                self.data = save_new_area(area_name[4:], self.loc, self.data)
+                self.data = save_new_area(area_name, self.loc, self.data)
                 mbox = QMessageBox()
                 QMessageBox.setText(mbox, 'Poprawnie zapisano obszar')
                 mbox.exec()
