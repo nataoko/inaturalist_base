@@ -20,8 +20,7 @@ from PyQt5.QtWidgets import QDesktopWidget, QApplication, QWidget, \
 from PyQt5.QtWebEngineWidgets import QWebEngineView
 import folium
 
-from points import valid_list, valid_polygon
-
+from validation import valid_list, valid_polygon, valid_name
 from saving import *
 
 DATA = open_data()
@@ -227,8 +226,7 @@ class NewArea(QWidget):
                     self.loc = lista
                     self.save_area()
 
-
-    def onClick(self):
+    def on_click(self):
         pass
         # msgbox = QMessageBox()
         # msgbox.setText('to select click "show details"')
@@ -246,33 +244,33 @@ class Observations(QWidget):
         self.move(0, 0)
 
         # buttons
-        backBtn = QPushButton(self)
-        backBtn.setIcon(QIcon('data' + os.sep + 'back.jpg'))
-        backBtn.resize(int(menu.screen_height * 0.05),
+        back_btn = QPushButton(self)
+        back_btn.setIcon(QIcon('data' + os.sep + 'back.jpg'))
+        back_btn.resize(int(menu.screen_height * 0.05),
                        int(menu.screen_height * 0.05))
-        backBtn.move(int(menu.screen_width * 0.95), int(menu.screen_height * 0.82))
-        backBtn.clicked.connect(self.back)
+        back_btn.move(int(menu.screen_width * 0.95), int(menu.screen_height * 0.82))
+        back_btn.clicked.connect(self.back)
 
-        readFromDiskBtn = QPushButton(self)
-        readFromDiskBtn.setText('Wczytaj obserwacje z dysku')
-        readFromDiskBtn.resize(menu.btn_width, menu.btn_height)
-        readFromDiskBtn.move(menu.btn_width, int(menu.btn_height / 2))
-        readFromDiskBtn.clicked.connect(self.read_from_disk)
+        read_from_disk_btn = QPushButton(self)
+        read_from_disk_btn.setText('Wczytaj obserwacje z dysku')
+        read_from_disk_btn.resize(menu.btn_width, menu.btn_height)
+        read_from_disk_btn.move(menu.btn_width, int(menu.btn_height / 2))
+        read_from_disk_btn.clicked.connect(self.read_from_disk)
 
-        generateFromBaseBtn = QPushButton(self)
-        generateFromBaseBtn.setText('Generuj obserwacje z bazy')
-        generateFromBaseBtn.resize(menu.btn_width, menu.btn_height)
-        generateFromBaseBtn.move(menu.btn_width, menu.btn_height * 2)
-        generateFromBaseBtn.clicked.connect(self.generate_from_base)
+        generate_from_base_btn = QPushButton(self)
+        generate_from_base_btn.setText('Generuj obserwacje z bazy')
+        generate_from_base_btn.resize(menu.btn_width, menu.btn_height)
+        generate_from_base_btn.move(menu.btn_width, menu.btn_height * 2)
+        generate_from_base_btn.clicked.connect(self.generate_from_base)
 
     def read_from_disk(self):
-        self.readFromDisk = ReadFromDisk(self)
-        self.readFromDisk.show()
+        self.readFromDiskWin = ReadFromDisk(self)
+        self.readFromDiskWin.show()
         self.hide()
 
     def generate_from_base(self):
-        self.generateFromBase = GenerateFromBase(self)
-        self.generateFromBase.show()
+        self.generateFromBaseWin = GenerateFromBase(self)
+        self.generateFromBaseWin.show()
         self.hide()
 
     def back(self):
@@ -288,15 +286,15 @@ class AboutApp(QWidget):
         self.resize(menu.screen_width, menu.screen_height - 100)
         self.move(0, 0)
 
-        backBtn = QPushButton(self)
-        backBtn.setIcon(QIcon('data' + os.sep + 'back.jpg'))
-        backBtn.resize(int(menu.screen_height * 0.05),
+        back_btn = QPushButton(self)
+        back_btn.setIcon(QIcon('data' + os.sep + 'back.jpg'))
+        back_btn.resize(int(menu.screen_height * 0.05),
                        int(menu.screen_height * 0.05))
-        backBtn.move(int(menu.screen_width * 0.95), int(menu.screen_height * 0.82))
-        backBtn.clicked.connect(self.back)
+        back_btn.move(int(menu.screen_width * 0.95), int(menu.screen_height * 0.82))
+        back_btn.clicked.connect(self.back)
 
-        aboutAppLabel = QLabel(self)
-        aboutAppLabel.setText(open('data' + os.sep + 'about_app.txt', 'r',
+        about_app_label = QLabel(self)
+        about_app_label.setText(open('data' + os.sep + 'about_app.txt', 'r',
                                    encoding='UTF-8'
                                    ).read())
         # self.aboutApptLabel.move(int(menu.screen_width*0.01), int(menu.screen_height*0.01))
