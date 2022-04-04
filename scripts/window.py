@@ -16,8 +16,10 @@ import sys
 from PyQt5.QtGui import QIcon, QFont
 from PyQt5.QtWidgets import QDesktopWidget, QApplication, QWidget, \
     QPushButton, QLabel, QLineEdit, QFormLayout, QVBoxLayout, QHBoxLayout, \
-    QTextEdit, QMessageBox, QInputDialog
+    QTextEdit, QMessageBox, QInputDialog, QDateEdit, QComboBox, QGridLayout, \
+    QCheckBox
 from PyQt5.QtWebEngineWidgets import QWebEngineView
+from PyQt5.QtCore import QDateTime
 import folium
 
 from validation import valid_list, valid_polygon, valid_name
@@ -63,6 +65,7 @@ class Menu(QWidget):
         self.btn_height = int(self.screen_height / 6)
         self.btn_width = int(self.screen_width / 3)
         self.initUI()
+        self.data = DATA
 
     def initUI(self):
         self.setWindowTitle('Menu')
@@ -130,7 +133,7 @@ class NewArea(QWidget):
         hbox_back.addWidget(back_btn)
 
         # edit lines
-        self.lineLoc = QLineEdit()  #todo: default grey values 10 ,0; 10 ,1;10.5 ,0.5;11 ,1;11 ,0
+        self.lineLoc = QLineEdit()  # todo: default grey values 10 ,0; 10 ,1;10.5 ,0.5;11 ,1;11 ,0
 
         flo = QFormLayout()
         flo.addRow('Dane geograficzne', self.lineLoc)
@@ -151,6 +154,7 @@ class NewArea(QWidget):
         folium.TileLayer('cartodbpositron').add_to(self.mapa)
         folium.TileLayer('Stamen Terrain').add_to(self.mapa)
         folium.LayerControl().add_to(self.mapa)
+        folium.LatLngPopup().add_to(self.mapa)
         self.html = self.mapa._repr_html_()
 
         self.webEngineView = QWebEngineView()
@@ -214,30 +218,25 @@ class NewArea(QWidget):
                 folium.TileLayer('cartodbpositron').add_to(self.mapa)
                 folium.TileLayer('Stamen Terrain').add_to(self.mapa)
                 folium.LayerControl().add_to(self.mapa)
+                folium.LatLngPopup().add_to(self.mapa)
                 self.html = self.mapa._repr_html_()
                 self.webEngineView.setHtml(self.html)
                 print('obszar poprawnie skonstruowany')  # todo: error okno zapisać?
 
                 # messagebox
-                reppli_msbox = QMessageBox.question(self, 'Poprawnie skonstruowano obszar',
-                                                 'Obszar poprawnie skonstruowany.\nAby zapisać, kliknij \"Yes\".',
-                                                 QMessageBox.Yes | QMessageBox.Cancel)
-                if reppli_msbox == QMessageBox.Yes:
+                repply_msbox = QMessageBox.question(self, 'Poprawnie skonstruowano obszar',
+                                                    'Obszar poprawnie skonstruowany.\nAby zapisać, kliknij \"Yes\".',
+                                                    QMessageBox.Yes | QMessageBox.Cancel)
+                if repply_msbox == QMessageBox.Yes:
                     self.loc = lista
                     self.save_area()
-
-    def on_click(self):
-        pass
-        # msgbox = QMessageBox()
-        # msgbox.setText('to select click "show details"')
-        # msgbox.setTextInteractionFlags(Qt.NoTextInteraction)  # (QtCore.Qt.TextSelectableByMouse)
-        # msgbox.setDetailedText('line 1\nline 2\nline 3')
-        # msgbox.exec()
 
 
 class Observations(QWidget):
     def __init__(self, parent=None):
         super(Observations, self).__init__()
+        self.generate_from_base_win = None
+        self.read_from_disk_win = None
         self.setWindowTitle('Obserwacje')
         self.setWindowIcon(QIcon('data' + os.sep + 'icon.png'))
         self.resize(menu.screen_width, menu.screen_height - 100)
@@ -246,8 +245,7 @@ class Observations(QWidget):
         # buttons
         back_btn = QPushButton(self)
         back_btn.setIcon(QIcon('data' + os.sep + 'back.jpg'))
-        back_btn.resize(int(menu.screen_height * 0.05),
-                       int(menu.screen_height * 0.05))
+        back_btn.resize(int(menu.screen_height * 0.05), int(menu.screen_height * 0.05))
         back_btn.move(int(menu.screen_width * 0.95), int(menu.screen_height * 0.82))
         back_btn.clicked.connect(self.back)
 
@@ -264,13 +262,13 @@ class Observations(QWidget):
         generate_from_base_btn.clicked.connect(self.generate_from_base)
 
     def read_from_disk(self):
-        self.readFromDiskWin = ReadFromDisk(self)
-        self.readFromDiskWin.show()
+        self.read_from_disk_win = ReadFromDisk(self)
+        self.read_from_disk_win.show()
         self.hide()
 
     def generate_from_base(self):
-        self.generateFromBaseWin = GenerateFromBase(self)
-        self.generateFromBaseWin.show()
+        self.generate_from_base_win = GenerateFromBase(self)
+        self.generate_from_base_win.show()
         self.hide()
 
     def back(self):
@@ -289,14 +287,14 @@ class AboutApp(QWidget):
         back_btn = QPushButton(self)
         back_btn.setIcon(QIcon('data' + os.sep + 'back.jpg'))
         back_btn.resize(int(menu.screen_height * 0.05),
-                       int(menu.screen_height * 0.05))
+                        int(menu.screen_height * 0.05))
         back_btn.move(int(menu.screen_width * 0.95), int(menu.screen_height * 0.82))
         back_btn.clicked.connect(self.back)
 
         about_app_label = QLabel(self)
         about_app_label.setText(open('data' + os.sep + 'about_app.txt', 'r',
-                                   encoding='UTF-8'
-                                   ).read())
+                                     encoding='UTF-8'
+                                     ).read())
         # self.aboutApptLabel.move(int(menu.screen_width*0.01), int(menu.screen_height*0.01))
 
     def back(self):
@@ -313,12 +311,11 @@ class ReadFromDisk(QWidget):
         self.move(0, 0)
 
         # back button
-        backBtn = QPushButton(self)
-        backBtn.setIcon(QIcon('data' + os.sep + 'back.jpg'))
-        backBtn.resize(int(menu.screen_height * 0.05),
-                       int(menu.screen_height * 0.05))
-        backBtn.move(int(menu.screen_width * 0.95), int(menu.screen_height * 0.82))
-        backBtn.clicked.connect(self.back)
+        back_btn = QPushButton(self)
+        back_btn.setIcon(QIcon('data' + os.sep + 'back.jpg'))
+        back_btn.resize(int(menu.screen_height * 0.05), int(menu.screen_height * 0.05))
+        back_btn.move(int(menu.screen_width * 0.95), int(menu.screen_height * 0.82))
+        back_btn.clicked.connect(self.back)
 
     def back(self):
         menu.obs.show()
@@ -334,17 +331,95 @@ class GenerateFromBase(QWidget):
         self.move(0, 0)
 
         # back button
-        backBtn = QPushButton(self)
-        backBtn.setIcon(QIcon('data' + os.sep + 'back.jpg'))
-        backBtn.resize(int(menu.screen_height * 0.05),
-                       int(menu.screen_height * 0.05))
-        backBtn.move(int(menu.screen_width * 0.95), int(menu.screen_height * 0.82))
-        backBtn.clicked.connect(self.back)
+        back_btn = QPushButton(self)
+        back_btn.setIcon(QIcon('data' + os.sep + 'back.jpg'))
+        back_btn.resize(int(menu.screen_height * 0.05), int(menu.screen_height * 0.05))
+        back_btn.move(int(menu.screen_width * 0.95), int(menu.screen_height * 0.82))
+        back_btn.clicked.connect(self.back)
+
+        hbox_back = QHBoxLayout()
+        hbox_back.addStretch(1)
+        hbox_back.addWidget(back_btn)
+
+        self.cb = QComboBox()
+        self.cb.addItems(menu.data['areas'].keys())
+        self.cb.currentIndexChanged.connect(self.selection_change)
+#todo: del self.data in new Area
+
+        self.date_from = QDateEdit(calendarPopup=True)
+        self.date_from.setDateTime(QDateTime.currentDateTime().addMonths(-1))
+
+        self.date_to = QDateEdit(calendarPopup=True)
+        self.date_to.setDateTime(QDateTime.currentDateTime())
+
+        self.checkBoxA = QCheckBox("Takson", self)
+        self.checkBoxB = QCheckBox("Nazwa", self)
+        self.checkBoxA.stateChanged.connect(self.uncheck)
+        self.checkBoxB.stateChanged.connect(self.uncheck)
+
+        grid = QGridLayout()
+        text_area = QLabel(self)
+        text_area.setText('Obszar:')
+        grid.addWidget(text_area, 0, 0)
+        text_from = QLabel(self)
+        text_from.setText('Od:')
+        grid.addWidget(text_from, 1, 0)
+        text_to = QLabel(self)
+        text_to.setText('Do:')
+        grid.addWidget(text_to, 2, 0)
+        text_name = QLabel('Takson/Nazwa')
+        #grid.addWidget()
+
+        grid.addWidget(self.cb, 0, 1)
+        grid.addWidget(self.date_from, 1, 1)
+        grid.addWidget(self.date_to, 2, 1)
+
+        hbox = QHBoxLayout()
+        hbox.addStretch(1)
+        hbox.addLayout(grid)
+        hbox.addWidget()
+        hbox.addStretch(1)
+
+        vbox = QVBoxLayout()
+        vbox.addLayout(hbox)
+        vbox.addStretch(1)
+        vbox.addLayout(hbox_back)
+        self.setLayout(vbox)
+
+        # todo: str18
+
+    # uncheck method
+    def uncheck(self, state):
+
+        # checking if state is checked
+        if state == Qt.Checked:
+
+            # if first check box is selected
+            if self.sender() == self.checkBoxNone:
+
+                # making other check box to uncheck
+                self.checkBoxA.setChecked(False)
+
+            # if second check box is selected
+            elif self.sender() == self.checkBoxA:
+
+                # making other check box to uncheck
+                self.checkBoxB.setChecked(False
+
+    def selection_change(self, i):
+        print("Items in the list are :")
+
+        for count in range(self.cb.count()):
+            print(self.cb.itemText(count))
+        print("Current index", i, "selection changed ", self.cb.currentText())
 
     def back(self):
         menu.obs.show()
         self.hide()
 
+
+
+#menu.obs.generate_from_base..setEnabled(False)
 
 if __name__ == '__main__':
     # Stworzenie aplikacji
