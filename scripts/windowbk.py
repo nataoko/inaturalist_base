@@ -16,8 +16,9 @@ import sys
 from PyQt5.QtGui import QIcon, QFont
 from PyQt5.QtWidgets import QDesktopWidget, QApplication, QWidget, \
     QPushButton, QLabel, QLineEdit, QFormLayout, QVBoxLayout, QHBoxLayout, \
-    QTextEdit, QMessageBox, QInputDialog, QListWidget, QComboBox
+    QTextEdit, QMessageBox, QInputDialog, QDateEdit, QComboBox
 from PyQt5.QtWebEngineWidgets import QWebEngineView
+from PyQt5.QtCore import QDateTime
 import folium
 
 from validation import valid_list, valid_polygon, valid_name
@@ -63,6 +64,7 @@ class Menu(QWidget):
         self.btn_height = int(self.screen_height / 6)
         self.btn_width = int(self.screen_width / 3)
         self.initUI()
+        self.data = DATA
 
     def initUI(self):
         self.setWindowTitle('Menu')
@@ -339,11 +341,27 @@ class GenerateFromBase(QWidget):
         hbox_back.addWidget(back_btn)
 
         self.cb = QComboBox()
-        self.cb.addItems(area_list())
+        self.cb.addItems(menu.data['areas'].keys())
         self.cb.currentIndexChanged.connect(self.selection_change)
+#todo: del self.data in new Area
+
+        self.date_edit = QDateEdit(calendarPopup=True)
+        #self.menuBar().setCornerWidget(self.date_edit, Qt.TopLeftCorner)
+        self.date_edit.setDateTime(QDateTime.currentDateTime())
+
+        text_area = QLabel(self)
+        text_area.setText('Obszar:')
+        text_from = QLabel(self)
+        text_from.setText('Od:')
+        text_to = QLabel(self)
+        text_to.setText('Do:')
+
+        hbox_txt = QHBoxLayout()
+        hbox_txt.addWidget(self.date_edit)
 
         vbox_lines = QVBoxLayout()
         vbox_lines.addWidget(self.cb)
+        vbox_lines.addWidget(self.date_edit)
 
         hbox = QHBoxLayout()
         hbox.addStretch(1)
@@ -370,26 +388,7 @@ class GenerateFromBase(QWidget):
         self.hide()
 
 
-class AreaList(QWidget):
-    def __init__(self, parent=None):
-        super(AreaList, self).__init__()
-        self.area_list = QListWidget()
-        for n in range(10):
-            self.area_list.addItem(str(n))
 
-        self.area_list.clicked.connect(self.clicked)
-
-        vbox = QVBoxLayout()
-        vbox.addWidget(self.area_list)
-
-        self.setLayout(vbox)
-        #self.setGeometry(300, 300, 300, 300)
-        self.show()
-
-    def clicked(self):
-        item = self.area_list.currentItem()
-        print(item.text())
-        self.hide()
 #menu.obs.generate_from_base..setEnabled(False)
 
 if __name__ == '__main__':
