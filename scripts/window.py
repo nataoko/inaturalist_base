@@ -19,7 +19,7 @@ from PyQt5.QtWidgets import QDesktopWidget, QApplication, QWidget, \
     QTextEdit, QMessageBox, QInputDialog, QDateEdit, QComboBox, QGridLayout, \
     QCheckBox
 from PyQt5.QtWebEngineWidgets import QWebEngineView
-from PyQt5.QtCore import QDateTime
+from PyQt5.QtCore import QDateTime, Qt
 import folium
 
 from validation import valid_list, valid_polygon, valid_name
@@ -356,6 +356,15 @@ class GenerateFromBase(QWidget):
         self.checkBoxB = QCheckBox("Nazwa", self)
         self.checkBoxA.stateChanged.connect(self.uncheck)
         self.checkBoxB.stateChanged.connect(self.uncheck)
+        hbox_tn = QHBoxLayout()
+        hbox_tn.addWidget(self.checkBoxA)
+        hbox_tn.addWidget(self.checkBoxB)
+
+        self.ledit_name = QLineEdit()
+
+        gen_btn = QPushButton(self)
+        gen_btn.setText('Generuj obserwacje')
+        gen_btn.clicked.connect(self.gen)
 
         grid = QGridLayout()
         text_area = QLabel(self)
@@ -367,26 +376,38 @@ class GenerateFromBase(QWidget):
         text_to = QLabel(self)
         text_to.setText('Do:')
         grid.addWidget(text_to, 2, 0)
-        text_name = QLabel('Takson/Nazwa')
-        #grid.addWidget()
+        text_name = QLabel('Takson/Nazwa:')
+        grid.addWidget(text_name, 3, 0)
 
         grid.addWidget(self.cb, 0, 1)
         grid.addWidget(self.date_from, 1, 1)
         grid.addWidget(self.date_to, 2, 1)
+        grid.addLayout(hbox_tn, 3, 1)
+        grid.addWidget(self.ledit_name, 4, 1)
+        #grid.addWidget(self.checkBoxA, 4, 1)
 
         hbox = QHBoxLayout()
         hbox.addStretch(1)
         hbox.addLayout(grid)
-        hbox.addWidget()
         hbox.addStretch(1)
+
+        hbox_gen = QHBoxLayout()
+        hbox_gen.addStretch(1)
+        hbox_gen.addWidget(gen_btn)
+        hbox_gen.addStretch(1)
 
         vbox = QVBoxLayout()
         vbox.addLayout(hbox)
+        vbox.addLayout(hbox_gen)
         vbox.addStretch(1)
         vbox.addLayout(hbox_back)
         self.setLayout(vbox)
 
         # todo: str18
+
+# date()
+    def gen(self):
+        pass
 
     # uncheck method
     def uncheck(self, state):
@@ -395,7 +416,7 @@ class GenerateFromBase(QWidget):
         if state == Qt.Checked:
 
             # if first check box is selected
-            if self.sender() == self.checkBoxNone:
+            if self.sender() == self.checkBoxB:
 
                 # making other check box to uncheck
                 self.checkBoxA.setChecked(False)
@@ -404,7 +425,7 @@ class GenerateFromBase(QWidget):
             elif self.sender() == self.checkBoxA:
 
                 # making other check box to uncheck
-                self.checkBoxB.setChecked(False
+                self.checkBoxB.setChecked(False)
 
     def selection_change(self, i):
         print("Items in the list are :")
