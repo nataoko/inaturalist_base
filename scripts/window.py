@@ -25,7 +25,7 @@ import folium
 
 from validation import valid_list, valid_polygon, valid_name
 from saving import *
-from inaturalist import name_list
+from inaturalist import name_list, taxon_list
 
 DATA = open_data()
 ERRORS = {
@@ -414,14 +414,42 @@ class GenerateFromBase(QWidget):
 
 # date()
     def text_changed(self):
-        names = []
-        txt = self.ledit_name.text()
-        for i in map(str, name_list(txt)):
-            name = i.split(': ')[1].split(' ', 1)[0]
-            names.append(name.lower())
+        txt = self.ledit_name.text().lower()
+        if len(txt) == 1:
+            if 48 <= ord(txt[0]) <= 57:
+                self.checkBoxA.setChecked(True)
+            elif 97 <= ord(txt[0]) <= 122:
+                self.checkBoxB.setChecked(True)
+            #else:
+            #    self.ledit_name.setStyleSheet("QLineEdit"
+            #                            "{"
+            #                            "background : lightred;"
+            #                            "}")
+
+        if self.checkBoxB.isChecked():
+            names = [i.split(': ')[1].split(' ', 1)[0].lower() for i in map(str, name_list(txt))]
+        elif self.checkBoxA.isChecked():
+            try:
+                names = [i.split(']', 1)[0][1:].lower() for i in map(str, taxon_list(txt))]
+            except:
+                self.ledit_name.setStyleSheet("QLineEdit"
+                                              "{"
+                                              "background : white;"
+                                              "}")
+                names = []
         for item in names:
             if not self.autocomplete_model.findItems(item):
                 self.autocomplete_model.appendRow(QStandardItem(item))
+        if self.autocomplete_model.findItems(txt):
+            self.ledit_name.setStyleSheet("QLineEdit"
+                                          "{"
+                                          "background : lightgreen;"
+                                          "}")
+        else:
+            self.ledit_name.setStyleSheet("QLineEdit"
+                                          "{"
+                                          "background : white;"
+                                          "}")
 
     def gen(self):
         pass
@@ -434,13 +462,11 @@ class GenerateFromBase(QWidget):
 
             # if first check box is selected
             if self.sender() == self.checkBoxB:
-
                 # making other check box to uncheck
                 self.checkBoxA.setChecked(False)
 
             # if second check box is selected
             elif self.sender() == self.checkBoxA:
-
                 # making other check box to uncheck
                 self.checkBoxB.setChecked(False)
 

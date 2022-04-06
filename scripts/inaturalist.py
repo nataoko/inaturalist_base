@@ -14,3 +14,9 @@ def name_list(txt):
     response = get_taxa(q=txt)#, rank=['genus', 'family'])
     taxa = Taxon.from_json_list(response)
     return taxa
+
+def taxon_list(txt):
+    enable_logging()
+    response = get_taxa(taxon_id=txt)#, rank=['genus', 'family'])
+    taxa = Taxon.from_json_list(response)
+    return taxa
