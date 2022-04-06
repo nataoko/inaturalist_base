@@ -427,10 +427,10 @@ class GenerateFromBase(QWidget):
             #                            "}")
 
         if self.checkBoxB.isChecked():
-            names = [i.split(': ')[1].split(' ', 1)[0].lower() for i in map(str, name_list(txt))]
+            names = [i.split(': ')[1].split(' ', 1)[0].lower()+'|'+i for i in map(str, name_list(txt))]
         elif self.checkBoxA.isChecked():
             try:
-                names = [i.split(']', 1)[0][1:].lower() for i in map(str, taxon_list(txt))]
+                names = [i.split(']', 1)[0][1:].lower()+'|'+i for i in map(str, taxon_list(txt))]
             except:
                 self.ledit_name.setStyleSheet("QLineEdit"
                                               "{"
