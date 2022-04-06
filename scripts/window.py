@@ -365,11 +365,7 @@ class GenerateFromBase(QWidget):
 
         self.ledit_name = QLineEdit()
         self.ledit_name.textChanged.connect(self.text_changed)
-
         self.autocomplete_model = QStandardItemModel()
-        #for text in autocomplete_list:
-        #    self.autocomplete_model.appendRow(QtGui.QStandardItem(text))
-
         self.completer = QCompleter()
         self.completer.setModel(self.autocomplete_model)
         self.ledit_name.setCompleter(self.completer)
@@ -396,7 +392,6 @@ class GenerateFromBase(QWidget):
         grid.addWidget(self.date_to, 2, 1)
         grid.addLayout(hbox_tn, 3, 1)
         grid.addWidget(self.ledit_name, 4, 1)
-        #grid.addWidget(self.checkBoxA, 4, 1)
 
         hbox = QHBoxLayout()
         hbox.addStretch(1)
@@ -419,23 +414,14 @@ class GenerateFromBase(QWidget):
 
 # date()
     def text_changed(self):
-        #self.ledit_name.setCompleter(QCompleter(['aa','an','ab']))
-        #names = list(map(str, name_list(self.ledit_name.text())))
-        #print(names)
-        #self.ledit_name.setCompleter(QCompleter(names))
-
         names = []
         txt = self.ledit_name.text()
         for i in map(str, name_list(txt)):
             name = i.split(': ')[1].split(' ', 1)[0]
             names.append(name.lower())
-        #    self.names = names
-        #self.ledit_name.setCompleter(QCompleter(self.names))
-        #user_input = self.ledit_name.text()
-        #items = self.autocomplete_model.findItems(names)#, Qt.MatchContains)
         for item in names:
             if not self.autocomplete_model.findItems(item):
-                self.autocomplete_model.appendRow(QStandardItem(item))#takeItem(QStandardItem(item))
+                self.autocomplete_model.appendRow(QStandardItem(item))
 
     def gen(self):
         pass
