@@ -25,7 +25,7 @@ import folium
 
 from validation import valid_list, valid_polygon, valid_name
 from saving import *
-from inaturalist import name_list, taxon_list
+from inaturalist import *
 
 DATA = open_data()
 ERRORS = {
@@ -327,6 +327,7 @@ class ReadFromDisk(QWidget):
 class GenerateFromBase(QWidget):
     def __init__(self, parent=None):
         super(GenerateFromBase, self).__init__()
+        self.valid_name = False
         self.names = None
         self.setWindowTitle('Generuj z bazy')
         self.setWindowIcon(QIcon('data' + os.sep + 'icon.png'))
@@ -427,32 +428,46 @@ class GenerateFromBase(QWidget):
             #                            "}")
 
         if self.checkBoxB.isChecked():
-            names = [i.split(': ')[1].split(' ', 1)[0].lower()+'|'+i for i in map(str, name_list(txt))]
+            if '|' not in txt:
+                self.names = [i.split(': ')[1].split(' ', 1)[0].lower() for i in map(str, name_list(txt))]
+                self.names_long = [i.split(': ')[1].split(' ', 1)[0].lower()+'|'+i for i in map(str, name_list(txt))]
         elif self.checkBoxA.isChecked():
             try:
-                names = [i.split(']', 1)[0][1:].lower()+'|'+i for i in map(str, taxon_list(txt))]
+                self.names = [i.split(']', 1)[0][1:].lower() for i in map(str, taxon_list(txt))]
+                self.names_long = [i.split(']', 1)[0][1:].lower()+'|'+i for i in map(str, taxon_list(txt))]
             except:
                 self.ledit_name.setStyleSheet("QLineEdit"
                                               "{"
                                               "background : white;"
                                               "}")
-                names = []
-        for item in names:
+                self.names = []
+                self.names_long = []
+        for item in self.names_long:
             if not self.autocomplete_model.findItems(item):
                 self.autocomplete_model.appendRow(QStandardItem(item))
-        if self.autocomplete_model.findItems(txt):
+        #print(txt.split('|')[0] in self.names, txt.split('|')[0], self.names)
+        if txt.split('|')[0] in self.names:
             self.ledit_name.setStyleSheet("QLineEdit"
                                           "{"
                                           "background : lightgreen;"
                                           "}")
+            self.valid_name = True
         else:
             self.ledit_name.setStyleSheet("QLineEdit"
                                           "{"
                                           "background : white;"
                                           "}")
+            self.valid_name = False
 
     def gen(self):
-        pass
+        d1 = self.date_from.date()
+        print(self.date_from.date(), type(self.date_from.date()))
+        txt = self.ledit_name.text().split('|')[0]
+        if self.valid_name:
+            if self.checkBoxB.isChecked():
+                gen_obs_name(txt)
+            else:
+                gen_obs_taxon(txt)
 
     # uncheck method
     def uncheck(self, state):

@@ -2,6 +2,7 @@ from pyinaturalist import (
     Taxon,
     enable_logging,
     get_taxa,
+v1,
     #get_taxa_autocomplete,
     #get_taxa_by_id,
     pprint,
@@ -20,3 +21,12 @@ def taxon_list(txt):
     response = get_taxa(taxon_id=txt)#, rank=['genus', 'family'])
     taxa = Taxon.from_json_list(response)
     return taxa
+
+def gen_obs_name(txt):
+    pprint(v1.observations.get_observations(q=txt))
+    return v1.observations.get_observations(q=txt)#, d1=d1, d2=d2)
+
+def gen_obs_taxon(txt):
+    return
+    v1.observations.get_observations(taxon_id=txt, d1=d1, d2=d2)
+
