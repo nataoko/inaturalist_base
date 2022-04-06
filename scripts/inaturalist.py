@@ -12,7 +12,7 @@ v1,
 
 def name_list(txt):
     enable_logging()
-    response = get_taxa(q=txt)#, rank=['genus', 'family'])
+    response = get_taxa(q=txt)#, rank=['genus', 'family']) # set rank --- kingdom doesn't work
     taxa = Taxon.from_json_list(response)
     return taxa
 

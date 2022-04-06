@@ -328,7 +328,8 @@ class GenerateFromBase(QWidget):
     def __init__(self, parent=None):
         super(GenerateFromBase, self).__init__()
         self.valid_name = False
-        self.names = None
+        self.names = []
+        self.names_long = []
         self.setWindowTitle('Generuj z bazy')
         self.setWindowIcon(QIcon('data' + os.sep + 'icon.png'))
         self.resize(menu.screen_width, menu.screen_height - 100)
@@ -461,7 +462,7 @@ class GenerateFromBase(QWidget):
 
     def gen(self):
         d1 = self.date_from.date()
-        print(self.date_from.date(), type(self.date_from.date()))
+        print(self.date_from.date(), type(self.date_from.date()), self.ledit_name.text().split('|')[0])
         txt = self.ledit_name.text().split('|')[0]
         if self.valid_name:
             if self.checkBoxB.isChecked():
