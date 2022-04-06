@@ -17,13 +17,14 @@ from PyQt5.QtGui import QIcon, QFont
 from PyQt5.QtWidgets import QDesktopWidget, QApplication, QWidget, \
     QPushButton, QLabel, QLineEdit, QFormLayout, QVBoxLayout, QHBoxLayout, \
     QTextEdit, QMessageBox, QInputDialog, QDateEdit, QComboBox, QGridLayout, \
-    QCheckBox
+    QCheckBox, QCompleter
 from PyQt5.QtWebEngineWidgets import QWebEngineView
 from PyQt5.QtCore import QDateTime, Qt
 import folium
 
 from validation import valid_list, valid_polygon, valid_name
 from saving import *
+from inaturalist import name_list
 
 DATA = open_data()
 ERRORS = {
@@ -361,6 +362,7 @@ class GenerateFromBase(QWidget):
         hbox_tn.addWidget(self.checkBoxB)
 
         self.ledit_name = QLineEdit()
+        self.ledit_name.textChanged.connect(self.text_changed)
 
         gen_btn = QPushButton(self)
         gen_btn.setText('Generuj obserwacje')
@@ -406,6 +408,18 @@ class GenerateFromBase(QWidget):
         # todo: str18
 
 # date()
+    def text_changed(self, txt):
+        #self.ledit_name.setCompleter(QCompleter(['aa','an','ab']))
+        #names = list(map(str, name_list(self.ledit_name.text())))
+        #print(names)
+        #self.ledit_name.setCompleter(QCompleter(names))
+
+        names = []
+        for i in map(str, name_list(self.ledit_name.text())):
+            name = i.split(': ')[1].split(' ', 1)[0]
+            print(name.lower(), i)
+            names.append(name.lower())
+
     def gen(self):
         pass
 
