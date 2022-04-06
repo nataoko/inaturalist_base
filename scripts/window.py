@@ -20,6 +20,7 @@ from PyQt5.QtWidgets import QDesktopWidget, QApplication, QWidget, \
     QCheckBox, QCompleter
 from PyQt5.QtWebEngineWidgets import QWebEngineView
 from PyQt5.QtCore import QDateTime, Qt
+from PyQt5.QtGui import QStandardItemModel, QStandardItem
 import folium
 
 from validation import valid_list, valid_polygon, valid_name
@@ -326,6 +327,7 @@ class ReadFromDisk(QWidget):
 class GenerateFromBase(QWidget):
     def __init__(self, parent=None):
         super(GenerateFromBase, self).__init__()
+        self.names = None
         self.setWindowTitle('Generuj z bazy')
         self.setWindowIcon(QIcon('data' + os.sep + 'icon.png'))
         self.resize(menu.screen_width, menu.screen_height - 100)
@@ -363,6 +365,14 @@ class GenerateFromBase(QWidget):
 
         self.ledit_name = QLineEdit()
         self.ledit_name.textChanged.connect(self.text_changed)
+
+        self.autocomplete_model = QStandardItemModel()
+        #for text in autocomplete_list:
+        #    self.autocomplete_model.appendRow(QtGui.QStandardItem(text))
+
+        self.completer = QCompleter()
+        self.completer.setModel(self.autocomplete_model)
+        self.ledit_name.setCompleter(self.completer)
 
         gen_btn = QPushButton(self)
         gen_btn.setText('Generuj obserwacje')
@@ -408,17 +418,24 @@ class GenerateFromBase(QWidget):
         # todo: str18
 
 # date()
-    def text_changed(self, txt):
+    def text_changed(self):
         #self.ledit_name.setCompleter(QCompleter(['aa','an','ab']))
         #names = list(map(str, name_list(self.ledit_name.text())))
         #print(names)
         #self.ledit_name.setCompleter(QCompleter(names))
 
         names = []
-        for i in map(str, name_list(self.ledit_name.text())):
+        txt = self.ledit_name.text()
+        for i in map(str, name_list(txt)):
             name = i.split(': ')[1].split(' ', 1)[0]
-            print(name.lower(), i)
             names.append(name.lower())
+        #    self.names = names
+        #self.ledit_name.setCompleter(QCompleter(self.names))
+        #user_input = self.ledit_name.text()
+        #items = self.autocomplete_model.findItems(names)#, Qt.MatchContains)
+        for item in names:
+            if not self.autocomplete_model.findItems(item):
+                self.autocomplete_model.appendRow(QStandardItem(item))#takeItem(QStandardItem(item))
 
     def gen(self):
         pass
