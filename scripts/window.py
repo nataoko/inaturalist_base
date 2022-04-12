@@ -27,7 +27,11 @@ from validation import valid_list, valid_polygon, valid_name
 from saving import *
 from inaturalist import *
 
-DATA = open_data()
+try:
+    DATA = open_data()
+except:
+    DATA = gen_if_error()
+
 ERRORS = {
     'PointList': {
         1: 'Lista ma mniej niż 3 elementy!',
@@ -230,7 +234,7 @@ class NewArea(QWidget):
                                                     'Obszar poprawnie skonstruowany.\nAby zapisać, kliknij \"Yes\".',
                                                     QMessageBox.Yes | QMessageBox.Cancel)
                 if repply_msbox == QMessageBox.Yes:
-                    self.loc = polygon
+                    self.loc = lista
                     self.save_area()
 
 
@@ -334,6 +338,7 @@ class GenerateFromBase(QWidget):
         self.setWindowIcon(QIcon('data' + os.sep + 'icon.png'))
         self.resize(menu.screen_width, menu.screen_height - 100)
         self.move(0, 0)
+        self.countries = None
 
         # back button
         back_btn = QPushButton(self)
@@ -351,14 +356,8 @@ class GenerateFromBase(QWidget):
         if my:
             self.cb.addItems(menu.data['areas'].keys())
         else:
-            import geopandas as gpd
-            world_gdf = gpd.read_file(
-                gpd.datasets.get_path('naturalearth_lowres')
-            )
-            countries = {
-                '|'.join([j for j in world_gdf.loc[i, ['continent', 'name']]][::-1]): world_gdf.loc[i, 'geometry'] for i
-                in range(len(world_gdf))}
-            self.cb.addItems(countries.keys())
+            self.countries = gen_countries()
+            self.cb.addItems(self.countries.keys())
 
         self.cb.currentIndexChanged.connect(self.selection_change)
 #todo: del self.data in new Area

@@ -9,9 +9,15 @@ def generate_new_data_file():
         outfile.write(json.dumps(data))
 
 
+def gen_if_error():
+    shutil.copyfile('data' + os.sep + 'data_bk.json', 'data' + os.sep + 'data.json')
+    return json.load(open('data' + os.sep + 'data_bk.json'))
+
+
 def open_data():
+    file = json.load(open('data'+os.sep+'data.json'))
     shutil.copyfile('data'+os.sep+'data.json', 'data'+os.sep+'data_bk.json')
-    return json.load(open('data'+os.sep+'data.json'))
+    return file
 
 
 def save_new_area(name, locs, data):

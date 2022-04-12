@@ -1,3 +1,5 @@
+import geopandas as gpd
+
 from pyinaturalist import (
     Taxon,
     enable_logging,
@@ -34,3 +36,12 @@ def gen_obs_taxon(txt, d1, d2):
     obs = v1.observations.get_observations(taxon_id=txt, d1=d1, d2=d2)
     pprint(obs)
     return obs
+
+def gen_countries():
+    world_gdf = gpd.read_file(
+        gpd.datasets.get_path('naturalearth_lowres')
+    )
+    countries = {
+        '|'.join([j for j in world_gdf.loc[i, ['continent', 'name']]][::-1]): world_gdf.loc[i, 'geometry'] for i
+        in range(len(world_gdf))}
+    return countries
