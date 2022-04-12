@@ -16,15 +16,18 @@ def name_list(txt):
     taxa = Taxon.from_json_list(response)
     return taxa
 
+
 def taxon_list(txt):
     enable_logging()
     response = get_taxa(taxon_id=txt)#, rank=['genus', 'family'])
     taxa = Taxon.from_json_list(response)
     return taxa
 
-def gen_obs_name(txt):
+
+def gen_obs_name(txt, d1):
     pprint(v1.observations.get_observations(q=txt))
     return v1.observations.get_observations(q=txt)#, d1=d1, d2=d2)
+
 
 def gen_obs_taxon(txt):
     return

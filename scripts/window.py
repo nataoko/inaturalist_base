@@ -466,7 +466,7 @@ class GenerateFromBase(QWidget):
         txt = self.ledit_name.text().split('|')[0]
         if self.valid_name:
             if self.checkBoxB.isChecked():
-                gen_obs_name(txt)
+                gen_obs_name(txt, d1)
             else:
                 gen_obs_taxon(txt)
 
