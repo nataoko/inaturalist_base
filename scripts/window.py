@@ -461,14 +461,14 @@ class GenerateFromBase(QWidget):
             self.valid_name = False
 
     def gen(self):
-        d1 = self.date_from.date()
-        print(self.date_from.date(), type(self.date_from.date()), self.ledit_name.text().split('|')[0])
+        d1 = self.date_from.date().toPyDate()
+        d2 = self.date_to.date().toPyDate()
         txt = self.ledit_name.text().split('|')[0]
         if self.valid_name:
             if self.checkBoxB.isChecked():
-                gen_obs_name(txt, d1)
+                gen_obs_name(txt, d1, d2)
             else:
-                gen_obs_taxon(txt)
+                gen_obs_taxon(txt, d1, d2)
 
     # uncheck method
     def uncheck(self, state):

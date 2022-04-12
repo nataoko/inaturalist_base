@@ -25,11 +25,12 @@ def taxon_list(txt):
 
 
 def gen_obs_name(txt, d1):
-    pprint(v1.observations.get_observations(q=txt))
-    return v1.observations.get_observations(q=txt)#, d1=d1, d2=d2)
+    obs = v1.observations.get_observations(q=txt, d1=d1, d2=d2)
+    pprint(obs)
+    return obs#v1.observations.get_observations(q=txt)#, d1=d1, d2=d2)
 
 
-def gen_obs_taxon(txt):
-    return
-    v1.observations.get_observations(taxon_id=txt, d1=d1, d2=d2)
-
+def gen_obs_taxon(txt, d1, d2):
+    obs = v1.observations.get_observations(taxon_id=txt, d1=d1, d2=d2)
+    pprint(obs)
+    return obs
