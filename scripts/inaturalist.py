@@ -24,7 +24,7 @@ def taxon_list(txt):
     return taxa
 
 
-def gen_obs_name(txt, d1):
+def gen_obs_name(txt, d1, d2):
     obs = v1.observations.get_observations(q=txt, d1=d1, d2=d2)
     pprint(obs)
     return obs#v1.observations.get_observations(q=txt)#, d1=d1, d2=d2)

@@ -230,7 +230,7 @@ class NewArea(QWidget):
                                                     'Obszar poprawnie skonstruowany.\nAby zapisać, kliknij \"Yes\".',
                                                     QMessageBox.Yes | QMessageBox.Cancel)
                 if repply_msbox == QMessageBox.Yes:
-                    self.loc = lista
+                    self.loc = polygon
                     self.save_area()
 
 
@@ -347,7 +347,19 @@ class GenerateFromBase(QWidget):
         hbox_back.addWidget(back_btn)
 
         self.cb = QComboBox()
-        self.cb.addItems(menu.data['areas'].keys())
+        my = 0
+        if my:
+            self.cb.addItems(menu.data['areas'].keys())
+        else:
+            import geopandas as gpd
+            world_gdf = gpd.read_file(
+                gpd.datasets.get_path('naturalearth_lowres')
+            )
+            countries = {
+                '|'.join([j for j in world_gdf.loc[i, ['continent', 'name']]][::-1]): world_gdf.loc[i, 'geometry'] for i
+                in range(len(world_gdf))}
+            self.cb.addItems(countries.keys())
+
         self.cb.currentIndexChanged.connect(self.selection_change)
 #todo: del self.data in new Area
 
@@ -487,7 +499,7 @@ class GenerateFromBase(QWidget):
                 self.checkBoxB.setChecked(False)
 
     def selection_change(self, i):
-        print("Items in the list are :")
+        #print("Items in the list are :")
 
         for count in range(self.cb.count()):
             print(self.cb.itemText(count))
