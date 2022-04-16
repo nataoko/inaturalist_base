@@ -23,7 +23,7 @@ from PyQt5.QtCore import QDateTime, Qt
 from PyQt5.QtGui import QStandardItemModel, QStandardItem
 import folium
 
-from validation import valid_list, valid_polygon, valid_name
+from validation import valid_list, valid_polygon, valid_name, Polygon, mapping
 from saving import *
 from inaturalist import *
 
@@ -331,6 +331,8 @@ class ReadFromDisk(QWidget):
 class GenerateFromBase(QWidget):
     def __init__(self, parent=None):
         super(GenerateFromBase, self).__init__()
+        #self.threatened = 0
+        self.show_obs = None
         self.valid_name = False
         self.names = []
         self.names_long = []
@@ -352,12 +354,9 @@ class GenerateFromBase(QWidget):
         hbox_back.addWidget(back_btn)
 
         self.cb = QComboBox()
-        my = 0
-        if my:
-            self.cb.addItems(menu.data['areas'].keys())
-        else:
-            self.countries = gen_countries()
-            self.cb.addItems(self.countries.keys())
+        self.cb.addItems(menu.data['areas'].keys())
+        self.countries = gen_countries()
+        self.cb.addItems(self.countries.keys())
 
         self.cb.currentIndexChanged.connect(self.selection_change)
 #todo: del self.data in new Area
@@ -383,6 +382,9 @@ class GenerateFromBase(QWidget):
         self.completer.setModel(self.autocomplete_model)
         self.ledit_name.setCompleter(self.completer)
 
+        self.checkBoxT = QCheckBox("Tylko zagrożone", self)
+        #self.checkBoxT.stateChanged.connect(self.check_t)
+
         gen_btn = QPushButton(self)
         gen_btn.setText('Generuj obserwacje')
         gen_btn.clicked.connect(self.gen)
@@ -399,12 +401,15 @@ class GenerateFromBase(QWidget):
         grid.addWidget(text_to, 2, 0)
         text_name = QLabel('Takson/Nazwa:')
         grid.addWidget(text_name, 3, 0)
+        text_th = QLabel('Zagrożony gatunek: ')
+        grid.addWidget(text_th, 5, 0)
 
         grid.addWidget(self.cb, 0, 1)
         grid.addWidget(self.date_from, 1, 1)
         grid.addWidget(self.date_to, 2, 1)
         grid.addLayout(hbox_tn, 3, 1)
         grid.addWidget(self.ledit_name, 4, 1)
+        grid.addWidget(self.checkBoxT, 5, 1)
 
         hbox = QHBoxLayout()
         hbox.addStretch(1)
@@ -425,7 +430,10 @@ class GenerateFromBase(QWidget):
 
         # todo: str18
 
-# date()
+#    def check_t(self):
+#        self.threatened = (self.threatened + 1) % 2
+#        print(self.threatened)
+
     def text_changed(self):
         txt = self.ledit_name.text().lower()
         if len(txt) == 1:
@@ -477,9 +485,15 @@ class GenerateFromBase(QWidget):
         txt = self.ledit_name.text().split('|')[0]
         if self.valid_name:
             if self.checkBoxB.isChecked():
-                gen_obs_name(txt, d1, d2)
+                obs = gen_obs_name(txt, d1, d2, int(self.checkBoxT.isChecked()))
             else:
-                gen_obs_taxon(txt, d1, d2)
+                obs = gen_obs_taxon(txt, d1, d2, int(self.checkBoxT.isChecked()))
+        try:
+            area = Polygon(self.cb[self.cb.currentText()])
+        except:
+            area = self.countries[self.cb.currentText()]
+        self.show_obs = ShowObs(txt, d1, d2, self.cb.currentText(), obs, area, int(self.checkBoxT.isChecked()))
+        self.show_obs.show()
 
     # uncheck method
     def uncheck(self, state):
@@ -503,12 +517,125 @@ class GenerateFromBase(QWidget):
         for count in range(self.cb.count()):
             print(self.cb.itemText(count))
         print("Current index", i, "selection changed ", self.cb.currentText())
+        #self.area = self.cb.currentText()
 
     def back(self):
         menu.obs.show()
         self.hide()
 
 
+class ShowObs(QWidget):
+    def __init__(self, txt, d1, d2, area_name, obs, area, th):
+        super(ShowObs, self).__init__()
+        self.loc = None
+        self.setWindowTitle('Prezentacja obserwacji')
+        self.setWindowIcon(QIcon('data' + os.sep + 'icon.png'))
+        self.resize(menu.screen_width, menu.screen_height - 100)
+        self.move(0, 0)
+        n = len(obs)
+        th = 'Tak' * th + 'Nie' * ((th + 1) % 2)
+
+        # back button
+        back_btn = QPushButton()
+        back_btn.setIcon(QIcon('data' + os.sep + 'back.jpg'))
+        back_btn.clicked.connect(self.back)
+
+        hbox_back = QHBoxLayout()
+        hbox_back.addStretch(1)
+        hbox_back.addWidget(back_btn)
+
+        self.metric = QLabel(self)
+        self.metric.setText(f'Obszar: {area_name}\nNazwa\Takson: {txt}\nData od: {d1} do: {d2}\nLiczba obserwacji: {n}\nTylko zagrożone: {th}')
+
+        hbox = QHBoxLayout()
+        hbox.addWidget(self.metric, 1)
+        #hbox.addStretch(1)
+        print(mapping(area))
+        #print(mapping(area)['features'])
+        print(mapping(area)['coordinates'][0])
+        #print(mapping(area)['features'][0]['geometry'])
+        #print(mapping(area)['features'][0]['geometry'][0])
+        #print(mapping(area)['features'][0]['geometry'][0][::-1])
+        # map
+        self.mapa = folium.Map(width=int(menu.screen_width * 0.83),
+                               height=int(menu.screen_height * 0.85),
+                               location=mapping(area)['coordinates'][0][0][::-1], zoom_start=5)
+        folium.GeoJson(area).add_to(self.mapa)
+        folium.TileLayer('cartodbpositron').add_to(self.mapa)
+        folium.TileLayer('Stamen Terrain').add_to(self.mapa)
+        folium.LayerControl().add_to(self.mapa)
+        folium.LatLngPopup().add_to(self.mapa)
+        self.html = self.mapa._repr_html_()
+
+        self.webEngineView = QWebEngineView()
+        self.webEngineView.setHtml(self.html)
+        # self.webEngineView.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
+
+        hbox_map = QHBoxLayout()
+        hbox_map.addWidget(self.webEngineView)
+        #hbox_map.addWidget(self.textEdit)
+
+        # layout settings
+        vbox = QVBoxLayout()
+        #vbox.addLayout(flo)
+        vbox.addLayout(hbox)
+        vbox.addLayout(hbox_map,1)
+        #vbox.addWidget(self.webEngineView)
+        vbox.addLayout(hbox_back)
+        self.setLayout(vbox)
+
+    def back(self):
+        menu.show()
+        self.hide()
+
+    def save_area(self):  # todo: shortcut alt enter
+        area_name, save = QInputDialog.getText(self, 'Zapisywanie obszaru', 'Podaj nazwę')
+        if save:
+            area_name = 'area' + area_name
+            print(str(area_name))
+            area_name = valid_name(area_name, self.data)
+            try:
+                error = int(area_name)
+                error_show('Name', error, 'nazwa')
+            except:
+                self.data = save_new_area(area_name, self.loc, self.data)
+                mbox = QMessageBox()
+                QMessageBox.setText(mbox, 'Poprawnie zapisano obszar')
+                mbox.exec()
+
+    def see_area(self):  # todo: shortcut ctr enter
+        lista = valid_list(self.lineLoc.text())
+        try:
+            error = int(lista)
+            error_show('PointList', error, 'dane lokalizacyjne')
+        except:
+            # point list update
+            self.textEdit.setPlainText('\n'.join(map(str, lista)))
+            polygon = valid_polygon(lista)
+            try:
+                error = int(polygon)
+                error_show('PointList', error, 'dane lokalizacyjne')
+            except:
+                # map update #todo: chceck loc what is first here, todo:zoom edit
+                self.mapa = folium.Map(width=menu.screen_width - 60,
+                                       height=menu.screen_height - 100,
+                                       location=lista[0][::-1], zoom_start=5)
+                folium.GeoJson(polygon).add_to(self.mapa)
+                folium.TileLayer('cartodbpositron').add_to(self.mapa)
+                folium.TileLayer('Stamen Terrain').add_to(self.mapa)
+                folium.LayerControl().add_to(self.mapa)
+                folium.LatLngPopup().add_to(self.mapa)
+                self.html = self.mapa._repr_html_()
+                self.webEngineView.setHtml(self.html)
+                print('obszar poprawnie skonstruowany')  # todo: error okno zapisać?
+
+                # messagebox
+                repply_msbox = QMessageBox.question(self, 'Poprawnie skonstruowano obszar',
+                                                    'Obszar poprawnie skonstruowany.\nAby zapisać, kliknij \"Yes\".',
+                                                    QMessageBox.Yes | QMessageBox.Cancel)
+                if repply_msbox == QMessageBox.Yes:
+                    self.loc = lista
+                    self.save_area()
 
 #menu.obs.generate_from_base..setEnabled(False)
 

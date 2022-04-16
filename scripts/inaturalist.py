@@ -26,16 +26,17 @@ def taxon_list(txt):
     return taxa
 
 
-def gen_obs_name(txt, d1, d2):
-    obs = v1.observations.get_observations(q=txt, d1=d1, d2=d2)
+def gen_obs_name(txt, d1, d2, threatened):
+    obs = v1.observations.get_observations(q=txt, d1=d1, d2=d2, threatened=threatened)
     pprint(obs)
     return obs#v1.observations.get_observations(q=txt)#, d1=d1, d2=d2)
 
 
-def gen_obs_taxon(txt, d1, d2):
-    obs = v1.observations.get_observations(taxon_id=txt, d1=d1, d2=d2)
+def gen_obs_taxon(txt, d1, d2, threatened):
+    obs = v1.observations.get_observations(taxon_id=txt, d1=d1, d2=d2, threatened=threatened)
     pprint(obs)
     return obs
+
 
 def gen_countries():
     world_gdf = gpd.read_file(

@@ -1,4 +1,4 @@
-from shapely.geometry import Polygon, Point
+from shapely.geometry import Polygon, mapping, Point
 
 
 def valid_list(lista):
@@ -13,6 +13,11 @@ def valid_list(lista):
         return int(lista_float)
     except:
         return lista_float
+
+
+#def data_as_polygon(data):
+#    data = {name: Polygon(data['areas'][name]) for name in data['areas']}
+#    return data
 
 
 def valid_polygon(lista):
