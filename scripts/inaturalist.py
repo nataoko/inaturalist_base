@@ -8,6 +8,8 @@ v1,
     #get_taxa_autocomplete,
     #get_taxa_by_id,
     pprint,
+get_observations,
+Observation
 )
 #from rich import print
 
@@ -27,7 +29,8 @@ def taxon_list(txt):
 
 
 def gen_obs_name(txt, d1, d2, threatened):
-    obs = v1.observations.get_observations(q=txt, d1=d1, d2=d2, threatened=threatened)
+    #obs = v1.observations.get_observations(q=txt, d1=d1, d2=d2, threatened=threatened)
+    obs = get_observations(q=txt, d1=d1, d2=d2, threatened=threatened, page='all')
     r = []
     for i in obs['results']:
         try:
@@ -37,7 +40,8 @@ def gen_obs_name(txt, d1, d2, threatened):
             pass
     if len(r) > 0:
         pprint(r)
-    print(obs)
+    #print(len(obs['results']))
+    #print(obs)
     #pprint(obs)
     return obs#v1.observations.get_observations(q=txt)#, d1=d1, d2=d2)
 

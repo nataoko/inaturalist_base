@@ -23,6 +23,7 @@ from PyQt5.QtCore import QDateTime, Qt
 from PyQt5.QtGui import QStandardItemModel, QStandardItem
 import folium
 
+from my_ipyplot import my_plot_images
 from validation import valid_list, valid_polygon, valid_name, Polygon, mapping
 from saving import *
 from inaturalist import *
@@ -496,7 +497,7 @@ class GenerateFromBase(QWidget):
         self.show_obs.show()
         #self.hide()
         # todo: container
-        #menu.obs.generate_from_base_win = GenerateFromBase(self)
+        #menu.obs.generate_from_base()
         #menu.obs.generate_from_base_win.show()
 
     # uncheck method
@@ -536,7 +537,7 @@ class ShowObs(QWidget):
         self.setWindowIcon(QIcon('data' + os.sep + 'icon.png'))
         self.resize(menu.screen_width, menu.screen_height - 100)
         self.move(0, 0)
-        n = len(obs)
+        n = obs['total_results']
         th = 'Tak' * th + 'Nie' * ((th + 1) % 2)
 
         # back button
@@ -594,13 +595,28 @@ class ShowObs(QWidget):
         self.setLayout(vbox)
 
     def add_obs(self, obs):
+        liczba = 0
+        liczba2 = 0
+        liczba3 = 0
         for i in obs['results']:
             if i['geojson'] is not None:
                 p = i['geojson']['coordinates'][::-1]
-                folium.Marker(p, popup=p).add_to(self.mapa)
+                observation = Observation.from_json_list(i)[0]
+                label = str(observation)
+                try:
+                    image = observation.photos[0].thumbnail_url
+                    popup = my_plot_images([image], [label])
+                    liczba += 1
+                except:
+                    popup = label
+                    liczba3 += 1
+                folium.Marker(p, popup=popup).add_to(self.mapa)
+            else:
+                liczba2 += 1
+        #print(liczba, liczba2, liczba3)#, len(my_observations))
 
     def back(self):
-        menu.obs.show()
+        menu.show()
         self.hide()
 
     def save_area(self):  # todo: shortcut alt enter
