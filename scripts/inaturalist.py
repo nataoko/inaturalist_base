@@ -28,7 +28,17 @@ def taxon_list(txt):
 
 def gen_obs_name(txt, d1, d2, threatened):
     obs = v1.observations.get_observations(q=txt, d1=d1, d2=d2, threatened=threatened)
-    pprint(obs)
+    r = []
+    for i in obs['results']:
+        try:
+            o = [i['taxon']['id']]
+            r.append(i)
+        except:
+            pass
+    if len(r) > 0:
+        pprint(r)
+    print(obs)
+    #pprint(obs)
     return obs#v1.observations.get_observations(q=txt)#, d1=d1, d2=d2)
 
 

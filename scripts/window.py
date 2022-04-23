@@ -494,6 +494,10 @@ class GenerateFromBase(QWidget):
             area = self.countries[self.cb.currentText()]
         self.show_obs = ShowObs(txt, d1, d2, self.cb.currentText(), obs, area, int(self.checkBoxT.isChecked()))
         self.show_obs.show()
+        #self.hide()
+        # todo: container
+        #menu.obs.generate_from_base_win = GenerateFromBase(self)
+        #menu.obs.generate_from_base_win.show()
 
     # uncheck method
     def uncheck(self, state):
@@ -550,21 +554,26 @@ class ShowObs(QWidget):
         hbox = QHBoxLayout()
         hbox.addWidget(self.metric, 1)
         #hbox.addStretch(1)
-        print(mapping(area))
+        #print(mapping(area))
         #print(mapping(area)['features'])
-        print(mapping(area)['coordinates'][0])
+        #print(mapping(area)['coordinates'][0])
         #print(mapping(area)['features'][0]['geometry'])
         #print(mapping(area)['features'][0]['geometry'][0])
         #print(mapping(area)['features'][0]['geometry'][0][::-1])
         # map
+        try:
+            loclat = mapping(area)['coordinates'][0][0][0][::-1]
+        except:
+            loclat = mapping(area)['coordinates'][0][0][::-1]
         self.mapa = folium.Map(width=int(menu.screen_width * 0.83),
                                height=int(menu.screen_height * 0.85),
-                               location=mapping(area)['coordinates'][0][0][::-1], zoom_start=5)
+                               location=loclat, zoom_start=5)
         folium.GeoJson(area).add_to(self.mapa)
         folium.TileLayer('cartodbpositron').add_to(self.mapa)
         folium.TileLayer('Stamen Terrain').add_to(self.mapa)
         folium.LayerControl().add_to(self.mapa)
         folium.LatLngPopup().add_to(self.mapa)
+        self.add_obs(obs)
         self.html = self.mapa._repr_html_()
 
         self.webEngineView = QWebEngineView()
@@ -584,8 +593,14 @@ class ShowObs(QWidget):
         vbox.addLayout(hbox_back)
         self.setLayout(vbox)
 
+    def add_obs(self, obs):
+        for i in obs['results']:
+            if i['geojson'] is not None:
+                p = i['geojson']['coordinates'][::-1]
+                folium.Marker(p, popup=p).add_to(self.mapa)
+
     def back(self):
-        menu.show()
+        menu.obs.show()
         self.hide()
 
     def save_area(self):  # todo: shortcut alt enter
