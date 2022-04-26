@@ -354,12 +354,6 @@ class GenerateFromBase(QWidget):
         hbox_back.addStretch(1)
         hbox_back.addWidget(back_btn)
 
-        self.cb = QComboBox()
-        self.cb.addItems(menu.data['areas'].keys())
-        self.countries = gen_countries()
-        self.cb.addItems(self.countries.keys())
-
-        self.cb.currentIndexChanged.connect(self.selection_change)
 #todo: del self.data in new Area
 
         self.date_from = QDateEdit(calendarPopup=True)
@@ -368,8 +362,8 @@ class GenerateFromBase(QWidget):
         self.date_to = QDateEdit(calendarPopup=True)
         self.date_to.setDateTime(QDateTime.currentDateTime())
 
-        self.checkBoxA = QCheckBox("Takson", self)
-        self.checkBoxB = QCheckBox("Nazwa", self)
+        self.checkBoxA = QCheckBox('Takson', self)
+        self.checkBoxB = QCheckBox('Nazwa', self)
         self.checkBoxA.stateChanged.connect(self.uncheck)
         self.checkBoxB.stateChanged.connect(self.uncheck)
         hbox_tn = QHBoxLayout()
@@ -386,31 +380,44 @@ class GenerateFromBase(QWidget):
         self.checkBoxT = QCheckBox("Tylko zagrożone", self)
         #self.checkBoxT.stateChanged.connect(self.check_t)
 
+        self.checkBoxArea = QCheckBox('', self)
+
+        self.cb = QComboBox()
+        self.cb.addItems(menu.data['areas'].keys())
+        self.countries = gen_countries()
+        self.cb.addItems(self.countries.keys())
+
+        self.cb.currentIndexChanged.connect(self.selection_change)
+
         gen_btn = QPushButton(self)
         gen_btn.setText('Generuj obserwacje')
         gen_btn.clicked.connect(self.gen)
 
         grid = QGridLayout()
-        text_area = QLabel(self)
-        text_area.setText('Obszar:')
-        grid.addWidget(text_area, 0, 0)
         text_from = QLabel(self)
         text_from.setText('Od:')
-        grid.addWidget(text_from, 1, 0)
+        grid.addWidget(text_from, 0, 0)
         text_to = QLabel(self)
         text_to.setText('Do:')
-        grid.addWidget(text_to, 2, 0)
+        grid.addWidget(text_to, 1, 0)
         text_name = QLabel('Takson/Nazwa:')
-        grid.addWidget(text_name, 3, 0)
+        grid.addWidget(text_name,2, 0)
         text_th = QLabel('Zagrożony gatunek: ')
-        grid.addWidget(text_th, 5, 0)
+        grid.addWidget(text_th, 4, 0)
+        text_area_check = QLabel(self)
+        text_area_check.setText('Tylko obszar:')
+        grid.addWidget(text_area_check, 5, 0)
+        text_area = QLabel(self)
+        text_area.setText('Obszar:')
+        grid.addWidget(text_area, 6, 0)
 
-        grid.addWidget(self.cb, 0, 1)
-        grid.addWidget(self.date_from, 1, 1)
-        grid.addWidget(self.date_to, 2, 1)
-        grid.addLayout(hbox_tn, 3, 1)
-        grid.addWidget(self.ledit_name, 4, 1)
-        grid.addWidget(self.checkBoxT, 5, 1)
+        grid.addWidget(self.date_from, 0, 1)
+        grid.addWidget(self.date_to, 1, 1)
+        grid.addLayout(hbox_tn, 2, 1)
+        grid.addWidget(self.ledit_name, 3, 1)
+        grid.addWidget(self.checkBoxT, 4, 1)
+        grid.addWidget(self.checkBoxArea, 5, 1)
+        grid.addWidget(self.cb, 6, 1)
 
         hbox = QHBoxLayout()
         hbox.addStretch(1)
@@ -493,7 +500,7 @@ class GenerateFromBase(QWidget):
             area = Polygon(self.cb[self.cb.currentText()])
         except:
             area = self.countries[self.cb.currentText()]
-        self.show_obs = ShowObs(txt, d1, d2, self.cb.currentText(), obs, area, int(self.checkBoxT.isChecked()))
+        self.show_obs = ShowObs(txt, d1, d2, self.cb.currentText(), obs, area, int(self.checkBoxT.isChecked()), self.checkBoxArea.isChecked())
         self.show_obs.show()
         #self.hide()
         # todo: container
@@ -530,7 +537,7 @@ class GenerateFromBase(QWidget):
 
 
 class ShowObs(QWidget):
-    def __init__(self, txt, d1, d2, area_name, obs, area, th):
+    def __init__(self, txt, d1, d2, area_name, obs, area, th, area_only):
         super(ShowObs, self).__init__()
         self.loc = None
         self.setWindowTitle('Prezentacja obserwacji')
@@ -554,21 +561,21 @@ class ShowObs(QWidget):
 
         hbox = QHBoxLayout()
         hbox.addWidget(self.metric, 1)
-        #hbox.addStretch(1)
-        #print(mapping(area))
-        #print(mapping(area)['features'])
-        #print(mapping(area)['coordinates'][0])
-        #print(mapping(area)['features'][0]['geometry'])
-        #print(mapping(area)['features'][0]['geometry'][0])
-        #print(mapping(area)['features'][0]['geometry'][0][::-1])
+
         # map
-        try:
-            loclat = mapping(area)['coordinates'][0][0][0][::-1]
-        except:
-            loclat = mapping(area)['coordinates'][0][0][::-1]
+        if area_only:
+            try:
+                loclat = mapping(area)['coordinates'][0][0][0][::-1]
+            except:
+                loclat = mapping(area)['coordinates'][0][0][::-1]
+
+            zoom = 5
+        else:
+            loclat = (0, 0)
+            zoom = 0
         self.mapa = folium.Map(width=int(menu.screen_width * 0.83),
                                height=int(menu.screen_height * 0.85),
-                               location=loclat, zoom_start=5)
+                               location=loclat, zoom_start=zoom)
         folium.GeoJson(area).add_to(self.mapa)
         folium.TileLayer('cartodbpositron').add_to(self.mapa)
         folium.TileLayer('Stamen Terrain').add_to(self.mapa)
@@ -602,8 +609,9 @@ class ShowObs(QWidget):
             if i['geojson'] is not None:
                 p = i['geojson']['coordinates'][::-1]
                 observation = Observation.from_json_list(i)[0]
-                label = str(observation)
+                #label = str(observation)
                 try:
+                    label = str(observation)
                     image = observation.photos[0].thumbnail_url
                     popup = my_plot_images([image], [label])
                     liczba += 1
