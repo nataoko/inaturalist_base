@@ -24,7 +24,7 @@ from PyQt5.QtGui import QStandardItemModel, QStandardItem
 import folium
 
 from my_ipyplot import my_plot_images
-from validation import valid_list, valid_polygon, valid_name, Polygon, mapping
+from validation import valid_list, valid_polygon, valid_name, Polygon, mapping, Point
 from saving import *
 from inaturalist import *
 
@@ -496,6 +496,8 @@ class GenerateFromBase(QWidget):
                 obs = gen_obs_name(txt, d1, d2, int(self.checkBoxT.isChecked()))
             else:
                 obs = gen_obs_taxon(txt, d1, d2, int(self.checkBoxT.isChecked()))
+        else:
+            print('error')
         try:
             area = Polygon(self.cb[self.cb.currentText()])
         except:
@@ -544,7 +546,7 @@ class ShowObs(QWidget):
         self.setWindowIcon(QIcon('data' + os.sep + 'icon.png'))
         self.resize(menu.screen_width, menu.screen_height - 100)
         self.move(0, 0)
-        n = obs['total_results']
+        self.n = obs['total_results']
         th = 'Tak' * th + 'Nie' * ((th + 1) % 2)
 
         # back button
@@ -556,32 +558,26 @@ class ShowObs(QWidget):
         hbox_back.addStretch(1)
         hbox_back.addWidget(back_btn)
 
-        self.metric = QLabel(self)
-        self.metric.setText(f'Obszar: {area_name}\nNazwa\Takson: {txt}\nData od: {d1} do: {d2}\nLiczba obserwacji: {n}\nTylko zagrożone: {th}')
-
-        hbox = QHBoxLayout()
-        hbox.addWidget(self.metric, 1)
-
         # map
         if area_only:
             try:
                 loclat = mapping(area)['coordinates'][0][0][0][::-1]
             except:
                 loclat = mapping(area)['coordinates'][0][0][::-1]
-
-            zoom = 5
+            zoom = 3
         else:
             loclat = (0, 0)
-            zoom = 0
-        self.mapa = folium.Map(width=int(menu.screen_width * 0.83),
-                               height=int(menu.screen_height * 0.85),
+            zoom = 2
+        self.mapa = folium.Map(width=int(menu.screen_width * 0.6),
+                               height=int(menu.screen_height * 0.83),
                                location=loclat, zoom_start=zoom)
-        folium.GeoJson(area).add_to(self.mapa)
+        if area_only:
+            folium.GeoJson(area).add_to(self.mapa)
         folium.TileLayer('cartodbpositron').add_to(self.mapa)
         folium.TileLayer('Stamen Terrain').add_to(self.mapa)
         folium.LayerControl().add_to(self.mapa)
         folium.LatLngPopup().add_to(self.mapa)
-        self.add_obs(obs)
+        self.add_obs(obs, area_only, area)
         self.html = self.mapa._repr_html_()
 
         self.webEngineView = QWebEngineView()
@@ -592,6 +588,12 @@ class ShowObs(QWidget):
         hbox_map.addWidget(self.webEngineView)
         #hbox_map.addWidget(self.textEdit)
 
+        self.metric = QLabel(self)
+        self.metric.setText(f'Obszar: {area_name}\nNazwa\Takson: {txt}\nData od: {d1} do: {d2}\nLiczba obserwacji: {self.n}\nTylko zagrożone: {th}')
+
+        hbox = QHBoxLayout()
+        hbox.addWidget(self.metric, 1)
+
         # layout settings
         vbox = QVBoxLayout()
         #vbox.addLayout(flo)
@@ -601,27 +603,28 @@ class ShowObs(QWidget):
         vbox.addLayout(hbox_back)
         self.setLayout(vbox)
 
-    def add_obs(self, obs):
+    def add_obs(self, obs, area_only, area):
         liczba = 0
         liczba2 = 0
         liczba3 = 0
         for i in obs['results']:
             if i['geojson'] is not None:
-                p = i['geojson']['coordinates'][::-1]
-                observation = Observation.from_json_list(i)[0]
-                #label = str(observation)
-                try:
-                    label = str(observation)
-                    image = observation.photos[0].thumbnail_url
-                    popup = my_plot_images([image], [label])
-                    liczba += 1
-                except:
-                    popup = label
-                    liczba3 += 1
-                folium.Marker(p, popup=popup).add_to(self.mapa)
-            else:
-                liczba2 += 1
-        #print(liczba, liczba2, liczba3)#, len(my_observations))
+                p = i['geojson']['coordinates']
+                if (area_only and area.contains(Point(p))) or not area_only:
+                    observation = Observation.from_json_list(i)[0]
+                    #label = str(observation)
+                    try:
+                        label = str(observation)
+                        image = observation.photos[0].thumbnail_url
+                        popup = my_plot_images([image], [label])
+                        liczba += 1
+                    except:
+                        #popup = label
+                        liczba3 += 1
+                    folium.Marker(p[::-1], popup=popup).add_to(self.mapa)
+                else:
+                    self.n -= 1
+                #print(liczba, liczba2, liczba3)#, len(my_observations))
 
     def back(self):
         menu.show()
