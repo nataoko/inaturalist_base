@@ -54,8 +54,7 @@ ERRORS = {
 def error_show(name, error, name_long):
     msg = QMessageBox()
     msg.setIcon(QMessageBox.Critical)
-    msg.setText(f'{name}Error{error}: '
-                + ERRORS[name][error])
+    msg.setText(f'{name}Error{error}: ' + ERRORS[name][error])
     msg.setWindowTitle(f'Błąd: {name_long}')
     msg.exec_()
 
@@ -64,7 +63,7 @@ class Menu(QWidget):
     def __init__(self):
         super(Menu, self).__init__()
         self.aboutApp = None
-        self.obs = None
+        self.generate_from_base_win = None
         self.newArea = None
         self.screen = QDesktopWidget().screenGeometry()
         self.screen_height = self.screen.height()
@@ -110,8 +109,8 @@ class Menu(QWidget):
         self.hide()
 
     def observations(self):
-        self.obs = Observations(self)
-        self.obs.show()
+        self.generate_from_base_win = GenerateFromBase(self)
+        self.generate_from_base_win.show()
         self.hide()
 
     def about_app(self):
@@ -239,50 +238,6 @@ class NewArea(QWidget):
                     self.save_area()
 
 
-class Observations(QWidget):
-    def __init__(self, parent=None):
-        super(Observations, self).__init__()
-        self.generate_from_base_win = None
-        self.read_from_disk_win = None
-        self.setWindowTitle('Obserwacje')
-        self.setWindowIcon(QIcon('data' + os.sep + 'icon.png'))
-        self.resize(menu.screen_width, menu.screen_height - 100)
-        self.move(0, 0)
-
-        # buttons
-        back_btn = QPushButton(self)
-        back_btn.setIcon(QIcon('data' + os.sep + 'back.jpg'))
-        back_btn.resize(int(menu.screen_height * 0.05), int(menu.screen_height * 0.05))
-        back_btn.move(int(menu.screen_width * 0.95), int(menu.screen_height * 0.82))
-        back_btn.clicked.connect(self.back)
-
-        read_from_disk_btn = QPushButton(self)
-        read_from_disk_btn.setText('Wczytaj obserwacje z dysku')
-        read_from_disk_btn.resize(menu.btn_width, menu.btn_height)
-        read_from_disk_btn.move(menu.btn_width, int(menu.btn_height / 2))
-        read_from_disk_btn.clicked.connect(self.read_from_disk)
-
-        generate_from_base_btn = QPushButton(self)
-        generate_from_base_btn.setText('Generuj obserwacje z bazy')
-        generate_from_base_btn.resize(menu.btn_width, menu.btn_height)
-        generate_from_base_btn.move(menu.btn_width, menu.btn_height * 2)
-        generate_from_base_btn.clicked.connect(self.generate_from_base)
-
-    def read_from_disk(self):
-        self.read_from_disk_win = ReadFromDisk(self)
-        self.read_from_disk_win.show()
-        self.hide()
-
-    def generate_from_base(self):
-        self.generate_from_base_win = GenerateFromBase(self)
-        self.generate_from_base_win.show()
-        self.hide()
-
-    def back(self):
-        menu.show()
-        self.hide()
-
-
 class AboutApp(QWidget):
     def __init__(self, parent=None):
         super(AboutApp, self).__init__()
@@ -306,26 +261,6 @@ class AboutApp(QWidget):
 
     def back(self):
         menu.show()
-        self.hide()
-
-
-class ReadFromDisk(QWidget):
-    def __init__(self, parent=None):
-        super(ReadFromDisk, self).__init__()
-        self.setWindowTitle('Wczytaj obserwacje z dysku')
-        self.setWindowIcon(QIcon('data' + os.sep + 'icon.png'))
-        self.resize(menu.screen_width, menu.screen_height - 100)
-        self.move(0, 0)
-
-        # back button
-        back_btn = QPushButton(self)
-        back_btn.setIcon(QIcon('data' + os.sep + 'back.jpg'))
-        back_btn.resize(int(menu.screen_height * 0.05), int(menu.screen_height * 0.05))
-        back_btn.move(int(menu.screen_width * 0.95), int(menu.screen_height * 0.82))
-        back_btn.clicked.connect(self.back)
-
-    def back(self):
-        menu.obs.show()
         self.hide()
 
 
@@ -357,7 +292,7 @@ class GenerateFromBase(QWidget):
 #todo: del self.data in new Area
 
         self.date_from = QDateEdit(calendarPopup=True)
-        self.date_from.setDateTime(QDateTime.currentDateTime().addMonths(-1))
+        self.date_from.setDateTime(QDateTime.currentDateTime().addDays(-2))
 
         self.date_to = QDateEdit(calendarPopup=True)
         self.date_to.setDateTime(QDateTime.currentDateTime())
@@ -499,7 +434,7 @@ class GenerateFromBase(QWidget):
         else:
             print('error')
         try:
-            area = Polygon(self.cb[self.cb.currentText()])
+            area = Polygon(menu.data['areas'][self.cb.currentText()])
         except:
             area = self.countries[self.cb.currentText()]
         self.show_obs = ShowObs(txt, d1, d2, self.cb.currentText(), obs, area, int(self.checkBoxT.isChecked()), self.checkBoxArea.isChecked())
@@ -534,7 +469,7 @@ class GenerateFromBase(QWidget):
         #self.area = self.cb.currentText()
 
     def back(self):
-        menu.obs.show()
+        menu.show()
         self.hide()
 
 
@@ -612,14 +547,14 @@ class ShowObs(QWidget):
                 p = i['geojson']['coordinates']
                 if (area_only and area.contains(Point(p))) or not area_only:
                     observation = Observation.from_json_list(i)[0]
-                    #label = str(observation)
+                    label = ''#str(observation)
                     try:
                         label = str(observation)
                         image = observation.photos[0].thumbnail_url
                         popup = my_plot_images([image], [label])
                         liczba += 1
                     except:
-                        #popup = label
+                        popup = label
                         liczba3 += 1
                     folium.Marker(p[::-1], popup=popup).add_to(self.mapa)
                 else:
