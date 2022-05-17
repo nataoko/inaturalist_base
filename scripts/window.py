@@ -539,9 +539,6 @@ class ShowObs(QWidget):
         self.setLayout(vbox)
 
     def add_obs(self, obs, area_only, area):
-        liczba = 0
-        liczba2 = 0
-        liczba3 = 0
         for i in obs['results']:
             if i['geojson'] is not None:
                 p = i['geojson']['coordinates']
@@ -552,14 +549,12 @@ class ShowObs(QWidget):
                         label = str(observation)
                         image = observation.photos[0].thumbnail_url
                         popup = my_plot_images([image], [label])
-                        liczba += 1
                     except:
                         popup = label
-                        liczba3 += 1
                     folium.Marker(p[::-1], popup=popup).add_to(self.mapa)
                 else:
                     self.n -= 1
-                #print(liczba, liczba2, liczba3)#, len(my_observations))
+        self.n = max(self.n - 2, 0) if area_only else self.n
 
     def back(self):
         menu.show()
