@@ -4,50 +4,32 @@ from pyinaturalist import (
     Taxon,
     enable_logging,
     get_taxa,
-v1,
-    #get_taxa_autocomplete,
-    #get_taxa_by_id,
-    pprint,
-get_observations,
-Observation
+    v1,
+    get_observations,
 )
-#from rich import print
 
 
 def name_list(txt):
     enable_logging()
-    response = get_taxa(q=txt)#, rank=['genus', 'family']) # set rank --- kingdom doesn't work
+    response = get_taxa(q=txt)
     taxa = Taxon.from_json_list(response)
     return taxa
 
 
 def taxon_list(txt):
     enable_logging()
-    response = get_taxa(taxon_id=txt)#, rank=['genus', 'family'])
+    response = get_taxa(taxon_id=txt)
     taxa = Taxon.from_json_list(response)
     return taxa
 
 
 def gen_obs_name(txt, d1, d2, threatened):
-    #obs = v1.observations.get_observations(q=txt, d1=d1, d2=d2, threatened=threatened)
     obs = get_observations(q=txt, d1=d1, d2=d2, threatened=threatened, page='all')
-    r = []
-    for i in obs['results']:
-        try:
-            o = [i['taxon']['id']]
-            r.append(i)
-        except:
-            pass
-    if len(r) > 0:
-        pprint(r)
-    #print(len(obs['results']))
-    #print(obs)
-    #pprint(obs)
-    return obs#v1.observations.get_observations(q=txt)#, d1=d1, d2=d2)
+    return obs
 
 
 def gen_obs_taxon(txt, d1, d2, threatened):
-    obs = v1.observations.get_observations(taxon_id=txt, d1=d1, d2=d2, threatened=threatened)
+    obs = v1.observations.get_observations(taxon_id=txt, d1=d1, d2=d2, threatened=threatened, page='all')
     pprint(obs)
     return obs
 
