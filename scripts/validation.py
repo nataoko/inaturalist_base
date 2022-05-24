@@ -15,11 +15,6 @@ def valid_list(lista):
         return lista_float
 
 
-#def data_as_polygon(data):
-#    data = {name: Polygon(data['areas'][name]) for name in data['areas']}
-#    return data
-
-
 def valid_polygon(lista):
     polygon = Polygon(lista)
     if not polygon.is_valid:
@@ -62,16 +57,3 @@ def valid_name(name, data):
     if name in data['areas']:
         return 2
     return name
-
-#polygon.contains(Point(p))
-#folium.Marker([0, 10], popup="Znacznik").add_to(mapa)
-
-#print(valid_list("0,6,3; 0,1; 0,2"),)
-##valid_list([('1', '0','4'), ('0','1'), ('0','2')]),
-##valid_list([('0','a'), ('0','1'), ('0','2')]),
-##valid_list([('a', '0'), ('0','1'), ('0','2')]),
-##valid_list([('200', '0'), ('0','1'), ('0','2')]),
-##valid_list([('2', '100'), ('0','1'), ('0','2')]),
-##valid_list([('1', '0'), ('0','1'), ('0','2')]),
-##valid_list([('1', '0'), ('0','1')]),
-##valid_list([('1', '0')]))

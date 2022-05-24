@@ -6,6 +6,8 @@ from pyinaturalist import (
     get_taxa,
     v1,
     get_observations,
+    pprint,
+    Observation,
 )
 
 

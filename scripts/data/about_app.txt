@@ -4,10 +4,12 @@ z bazy internetowej iNaturalist dostępnej pod adresem internetowym www.inatural
 będą obejmowały rząd pieczarkowce.
 
 Technologia wykonania aplikacji
-Kod programu będzie napisany w języku Python 3.8 z użyciem m. in. biblioteki pyinaturalist.
+Kod programu będzie napisany w języku Python 3.8 z użyciem m. in. bibliotek pyinaturalist, ipyplot, folium, PyQt5.
 
 Warunki techniczne
-Aplikacja będzie możliwa do uruchomienia na innych komputerach z zainstalowanym systemem Windows. Do użytkowania aplikacji wymagane jest połączenie internetowe.
+Do użytkowania aplikacji wymagane jest połączenie internetowe.
 
 O Autorze
 Natalia Okopna, kontakt: natalia.okopna@gmail.com
+
+Aplikacja została stworzona na potrzeby przedmiotu Pracowania Informatyczna II Bioinformatyka Mgr Uniwersytet Przyrodniczy we Wrocławiu.

@@ -17,7 +17,7 @@ from PyQt5.QtGui import QIcon, QFont
 from PyQt5.QtWidgets import QDesktopWidget, QApplication, QWidget, \
     QPushButton, QLabel, QLineEdit, QFormLayout, QVBoxLayout, QHBoxLayout, \
     QTextEdit, QMessageBox, QInputDialog, QDateEdit, QComboBox, QGridLayout, \
-    QCheckBox, QCompleter
+    QCheckBox, QCompleter, QListWidget
 from PyQt5.QtWebEngineWidgets import QWebEngineView
 from PyQt5.QtCore import QDateTime, Qt
 from PyQt5.QtGui import QStandardItemModel, QStandardItem
@@ -47,6 +47,9 @@ ERRORS = {
     'Name': {
         1: 'Nazwa musi zawierać jedynie znaki alfanumeryczne!',
         2: 'Obszar o podanej nazwie istnieje. Wybierz inną nazwę.',
+    },
+    'Taxon': {
+        1: 'Nazwa musi być podświetlona na zielono.'
     }
 }
 
@@ -432,12 +435,13 @@ class GenerateFromBase(QWidget):
             else:
                 obs = gen_obs_taxon(txt, d1, d2, int(self.checkBoxT.isChecked()))
         else:
-            print('error')
+            error_show('Taxon', 1, 'taxon')
         try:
             area = Polygon(menu.data['areas'][self.cb.currentText()])
         except:
             area = self.countries[self.cb.currentText()]
-        self.show_obs = ShowObs(txt, d1, d2, self.cb.currentText(), obs, area, int(self.checkBoxT.isChecked()), self.checkBoxArea.isChecked())
+        self.show_obs = ShowObs(txt, d1, d2, self.cb.currentText(), obs, area, int(self.checkBoxT.isChecked()),
+                                self.checkBoxArea.isChecked())
         self.show_obs.show()
         #self.hide()
         # todo: container
@@ -476,6 +480,7 @@ class GenerateFromBase(QWidget):
 class ShowObs(QWidget):
     def __init__(self, txt, d1, d2, area_name, obs, area, th, area_only):
         super(ShowObs, self).__init__()
+        self.lista = None
         self.loc = None
         self.setWindowTitle('Prezentacja obserwacji')
         self.setWindowIcon(QIcon('data' + os.sep + 'icon.png'))
@@ -503,8 +508,9 @@ class ShowObs(QWidget):
         else:
             loclat = (0, 0)
             zoom = 2
-        self.mapa = folium.Map(width=int(menu.screen_width * 0.6),
-                               height=int(menu.screen_height * 0.83),
+            area_name = 'Ziemia'
+        self.mapa = folium.Map(#width=int(menu.screen_width * 0.6),
+                               #height=int(menu.screen_height * 0.83),
                                location=loclat, zoom_start=zoom)
         if area_only:
             folium.GeoJson(area).add_to(self.mapa)
@@ -516,12 +522,23 @@ class ShowObs(QWidget):
         self.html = self.mapa._repr_html_()
 
         self.webEngineView = QWebEngineView()
+
+        r = []
+        for i in obs['results']:
+            try:
+                o = [i['taxon']['id']]
+                r.append(i)
+            except:
+                pass
+        if len(r) > 0:
+            print(str(pprint(r)))
+
         self.webEngineView.setHtml(self.html)
         # self.webEngineView.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Minimum)
 
         hbox_map = QHBoxLayout()
         hbox_map.addWidget(self.webEngineView)
-        #hbox_map.addWidget(self.textEdit)
+        #hbox_map.addWidget(self.lista)
 
         self.metric = QLabel(self)
         self.metric.setText(f'Obszar: {area_name}\nNazwa\Takson: {txt}\nData od: {d1} do: {d2}\nLiczba obserwacji: {self.n}\nTylko zagrożone: {th}')
@@ -539,13 +556,19 @@ class ShowObs(QWidget):
         self.setLayout(vbox)
 
     def add_obs(self, obs, area_only, area):
+        # A list
+        #self.lista = QListWidget()
+        #self.lista.sizeHint().setWidth(self.lista.sizeHintForColumn(0))
+
         for i in obs['results']:
             if i['geojson'] is not None:
                 p = i['geojson']['coordinates']
                 if (area_only and area.contains(Point(p))) or not area_only:
                     observation = Observation.from_json_list(i)[0]
                     label = ''#str(observation)
+                    #self.lista.addItem(str(pprint(i)))
                     try:
+                        #self.lista.addItem(str(i))
                         label = str(observation)
                         image = observation.photos[0].thumbnail_url
                         popup = my_plot_images([image], [label])
