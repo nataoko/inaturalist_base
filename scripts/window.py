@@ -486,17 +486,8 @@ class ShowObs(QWidget):
         self.setWindowIcon(QIcon('data' + os.sep + 'icon.png'))
         self.resize(menu.screen_width, menu.screen_height - 100)
         self.move(0, 0)
-        self.n = obs['total_results']
+        self.n = 0
         th = 'Tak' * th + 'Nie' * ((th + 1) % 2)
-
-        # back button
-        back_btn = QPushButton()
-        back_btn.setIcon(QIcon('data' + os.sep + 'back.jpg'))
-        back_btn.clicked.connect(self.back)
-
-        hbox_back = QHBoxLayout()
-        hbox_back.addStretch(1)
-        hbox_back.addWidget(back_btn)
 
         # map
         if area_only:
@@ -509,9 +500,7 @@ class ShowObs(QWidget):
             loclat = (0, 0)
             zoom = 2
             area_name = 'Ziemia'
-        self.mapa = folium.Map(#width=int(menu.screen_width * 0.6),
-                               #height=int(menu.screen_height * 0.83),
-                               location=loclat, zoom_start=zoom)
+        self.mapa = folium.Map(location=loclat, zoom_start=zoom)
         if area_only:
             folium.GeoJson(area).add_to(self.mapa)
         folium.TileLayer('cartodbpositron').add_to(self.mapa)
@@ -552,7 +541,7 @@ class ShowObs(QWidget):
         vbox.addLayout(hbox)
         vbox.addLayout(hbox_map,1)
         #vbox.addWidget(self.webEngineView)
-        vbox.addLayout(hbox_back)
+        #vbox.addLayout(hbox_back)
         self.setLayout(vbox)
 
     def add_obs(self, obs, area_only, area):
@@ -563,7 +552,9 @@ class ShowObs(QWidget):
         for i in obs['results']:
             if i['geojson'] is not None:
                 p = i['geojson']['coordinates']
+                print(p)
                 if (area_only and area.contains(Point(p))) or not area_only:
+                    print(p)
                     observation = Observation.from_json_list(i)[0]
                     label = ''#str(observation)
                     #self.lista.addItem(str(pprint(i)))
@@ -575,9 +566,7 @@ class ShowObs(QWidget):
                     except:
                         popup = label
                     folium.Marker(p[::-1], popup=popup).add_to(self.mapa)
-                else:
-                    self.n -= 1
-        self.n = max(self.n - 2, 0) if area_only else self.n
+                    self.n += 1
 
     def back(self):
         menu.show()

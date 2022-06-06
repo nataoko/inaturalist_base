@@ -3,6 +3,14 @@ Stworzona została aplikacja, której głównym zadaniem jest prezentacja na dan
 z bazy internetowej iNaturalist dostępnej pod adresem internetowym www.inaturalist.org. Obszary wprowadza użytkownik. Domyślnie zapisane jest kilka lokalizacji. 
 będą obejmowały rząd pieczarkowce.
 
+Obsługa aplikacji
+Nowy obszar --- użytkownik wprowadza obszar w formacie: szerokość, długość; szerokość, długość; szerokość, długość [; szerokość, długość; ...]
+np. 1, 1; 1,2; 2,2. Przy czym należy podać min. 3 pary współrzędnych obszaru wypukłego. Kierunek podawania punktów jest dowolna.
+Następnie możemy zobaczyć obszar oraz go zapisać.
+Obserwacje --- użytkownik podaje zakres daty, gatunek (po łacinie) lub takson oraz opcjonalnie wybiera zagrożone/niezagrożone oraz czy szukamy na obszarze, czy na cąłym świecie.
+Obszar wybiera z dostepnych na liście.
+Uwaga! Czasami trzeba podac samą nazwę gatunkową, bądź takson. Przy doborze zakresu dat należy mieć na uwadze, że danych nie może być za dużo, ze względu na ograniczenia pamięci.
+
 Technologia wykonania aplikacji
 Kod programu będzie napisany w języku Python 3.8 z użyciem m. in. bibliotek pyinaturalist, ipyplot, folium, PyQt5.
 
